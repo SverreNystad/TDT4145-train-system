@@ -1,7 +1,10 @@
+import sqlite3
 from database_config import DATABASE_NAME
 
 
 DATABASE: str = DATABASE_NAME
+STATION_NAME_INDEX: int = 0
+MOH_INDEX: int = 1
 
 
 def getStations() -> list:
@@ -9,7 +12,7 @@ def getStations() -> list:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM Stasjon")
+	cursor.execute("SELECT * FROM Stasjon;")
 	result = cursor.fetchall()
 	connection.commit()
 	connection.close()
@@ -17,5 +20,9 @@ def getStations() -> list:
 
 def printStations() -> None:
 	stations: list = getStations()
+	print("Stasjoner: ")
 	for station in stations:
-		print("Stasjonsnavn: " + station[0] + " Moh: " + station[1])
+		print("Stasjonsnavn: " + station[STATION_NAME_INDEX] + " Moh: " + str(station[MOH_INDEX]))
+
+if __name__ == "__main__":
+	printStations()
