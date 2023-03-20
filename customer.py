@@ -1,7 +1,8 @@
 from datetime import datetime
 import sqlite3
 
-from database_config import DATABASE_NAME;
+from database_config import DATABASE_NAME
+from inputHandler import inputSQLData;
 
 DATABASE: str = DATABASE_NAME
 ORDERID_INDEX = 0
@@ -9,10 +10,13 @@ ORDER_DATE_INDEX = 1
 
 
 def registerCustomerInfo():
-	customerName = input("Enter customer name: ")
-	customerEpost = input("Enter customer epost: ")
-	customerPhone = input("Enter customer phone: ")
-	postCustomer(customerName, customerEpost, customerPhone)
+	customerName = inputSQLData("Enter customer name: ")
+	customerEpost = inputSQLData("Enter customer epost: ")
+	customerPhone = inputSQLData("Enter customer phone: ")
+	if (canCreateCustomer(customerEpost, customerPhone)):
+		postCustomer(customerName, customerEpost, customerPhone)
+	else:
+		print("Customer already exists")
 
 
 def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> bool:
@@ -20,7 +24,7 @@ def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> boo
         return False
     if (customerName.isalpha() == False or customerPhone.isdigit() == False):
         return False
-    if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1 or customerEpost.find("@") > customerEpost.find(".")):
+    if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1):
         return False
     return True
 
@@ -32,14 +36,23 @@ def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> N
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (Navn =:customerName, Epost =:customerEpost, TlfNr =:customerPhone)", {"customerName": customerName, "customerEpost": customerEpost, "customerPhone": customerPhone})
-
-	# cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
+	# cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (customerName, customerEpost, customerPhone);", {"customerName": customerName, "customerEpost": customerEpost, "customerPhone": customerPhone})
+	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
 	connection.commit()
 	connection.close()
 
+def canCreateCustomer(customerEpost: str, customerPhone: str) -> bool:
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	cursor.execute("SELECT * FROM Kunde WHERE Epost =:customerEpost OR TlfNr =:customerPhone;", {"customerEpost": customerEpost, "customerPhone": customerPhone})
+	result = cursor.fetchall()
+	connection.close()
+	return len(result) == 0
+
 def login() -> int:
-	customerEpost = input("Enter epost to login: ")
+	customerEpost = inputSQLData("Enter epost to login: ")
+
 	return getCustomer(customerEpost)
 
 def getCustomer(customerEpost: str) -> int:
@@ -47,7 +60,7 @@ def getCustomer(customerEpost: str) -> int:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT KundeID FROM Kunde WHERE Epost =:customerEpost", {"customerEpost": customerEpost})
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Epost =:customerEpost", {"customerEpost": customerEpost})
 	result = cursor.fetchone()
 	connection.close()
 	return result
@@ -99,7 +112,7 @@ def getCustomerHistory(CustomerID: str) -> list:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM KundeOrdre WHERE KundeID =:CustomerID", {"CustomerID": CustomerID})
+	cursor.execute("SELECT * FROM KundeOrdre WHERE Kundenummer =:CustomerID", {"CustomerID": CustomerID})
 	result = cursor.fetchall()
 	connection.commit()
 	connection.close()
@@ -115,3 +128,11 @@ def getCustomerTicketBy(CusomerOrderId: str) -> list:
 	connection.commit()
 	connection.close()
 	return result
+
+if __name__ == "__main__":
+	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+	postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
+	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+
+
+
