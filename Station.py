@@ -1,5 +1,6 @@
 import sqlite3
 from database_config import DATABASE_NAME
+from inputHandler import previewWithSpecialCharacters
 
 
 DATABASE: str = DATABASE_NAME
@@ -22,7 +23,7 @@ def printStations() -> None:
 	stations: list = getStations()
 	print("Stasjoner: ")
 	for station in stations:
-		print("Stasjonsnavn: " + station[STATION_NAME_INDEX] + " Moh: " + str(station[MOH_INDEX]))
+		print("Stasjonsnavn: " + previewWithSpecialCharacters(station[STATION_NAME_INDEX]) + " Moh: " + str(station[MOH_INDEX]))
 
 if __name__ == "__main__":
 	printStations()
