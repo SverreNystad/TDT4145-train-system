@@ -5,11 +5,12 @@
 
 from Station import printStations
 from TrainRoutes import getAllTrainRutesForTrip, getAllTrainRutesOnDay
-from customer import getFutureOrders, login, printFutureOrdersAndTickets, registerCustomerInfo
+from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
+from database_config import setup
 
 
 def main():
-
+	# Setup the database with all tables and data
 	setup()
 
 	isLoggedIn: bool = False
@@ -84,10 +85,7 @@ def main():
 			
 
 
-def setup() -> None:
-	# Create all tables
-	# insert all data
-	pass
+
 
 def isSQLInjection(userInput: str) -> bool:
 	# Check if the user input contains SQL injection
