@@ -4,6 +4,7 @@ import sqlite3
 from database_config import DATABASE_NAME;
 
 DATABASE: str = DATABASE_NAME
+ORDERID_INDEX = 0
 ORDER_DATE_INDEX = 1
 
 
@@ -51,6 +52,47 @@ def getCustomer(customerEpost: str) -> int:
 	connection.close()
 	return result
 
+def getFutureTickets(CustomerID: str) -> list:
+	# Get all orders
+	history: list = getCustomerHistory(CustomerID)
+	orderToTicket: dict = {}
+
+	for order in history:
+		orderToTicket[order] = getCustomerTicketBy(order[ORDERID_INDEX])
+
+	futureTickets: list = []
+
+	for order in orderToTicket:
+		tickets: list = orderToTicket[order]
+
+		# Check for each ticket that it is in the ticket is in the future
+		for ticket in tickets:
+			if (ticket[ORDER_DATE_INDEX] > datetime.now()): # I do not know if it is possible to compare a datetime object with a string
+				futureTickets.append(ticket)
+	
+	return futureTickets
+
+def printFutureOrdersAndTickets(CustomerID: str) -> None:
+	# Get all orders
+	history: list = getCustomerHistory(CustomerID)
+	orderToTicket: dict = {}
+
+	for order in history:
+		orderToTicket[order] = getCustomerTicketBy(order[ORDERID_INDEX])
+
+
+	for order in orderToTicket:
+		tickets: list = orderToTicket[order]
+		futureTickets: list = []
+
+		# Check for each ticket that it is in the ticket is in the future
+		for ticket in tickets:
+			if (ticket[ORDER_DATE_INDEX] > datetime.now()): # I do not know if it is possible to compare a datetime object with a string
+				futureTickets.append(ticket)
+		print("Ordernummer: " + order[ORDERID_INDEX] + " Order date: " + order[ORDER_DATE_INDEX])
+
+		for futureTicket in futureTickets:
+			print("Ticket: " + futureTicket)
 
 def getCustomerHistory(CustomerID: str) -> list:
 	# Create a connection to the database
@@ -63,11 +105,13 @@ def getCustomerHistory(CustomerID: str) -> list:
 	connection.close()
 	return result
 
-def getFutureOrders(CustomerID: str) -> list:
-	history: list = getCustomerHistory(CustomerID)
-	futureOrders: list = []
-
-	for order in history:
-		if (order[ORDER_DATE_INDEX] > datetime.now()): # I do not know if it is possible to compare a datetime object with a string
-			futureOrders.append(order)
-	return futureOrders
+def getCustomerTicketBy(CusomerOrderId: str) -> list:
+	# Create a connection to the database
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	cursor.execute("SELECT * FROM Billett WHERE OrdreNummer =:CustomerOrderID", {"CustomerOrderID": CusomerOrderId})
+	result = cursor.fetchall()
+	connection.commit()
+	connection.close()
+	return result
