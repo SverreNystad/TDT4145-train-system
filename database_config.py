@@ -19,13 +19,13 @@ def setup() -> None:
 	cursor = connection.cursor()
 	cursor.executescript(createTablesSql)
 
-	if (shallInsertData()):
+	if (isEmpty()):
 		cursor.executescript(insertDataSql)
 
 	connection.commit()
 	connection.close()
 
-def shallInsertData() -> bool:
+def isEmpty() -> bool:
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE_NAME)
 	# Create a cursor to execute SQL commands
