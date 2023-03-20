@@ -9,6 +9,14 @@ from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
 from inputHandler import inputSQLData
 
+trainLogo = '''
+  _______     _______     _______     _______     ___       
+ /       \\   /       \\   /       \\   /       \\   /  |\_ 
+|   NORD  | |  LANDS  | |  BANEN  | |   S J   | |   |____\_ 
+|_________|_|_________|_|_________|_|_________|_|_  |______|
+  O     O     O     O     O     O     O     O    O\/_|      
+'''
+
 
 def main():
 	# Setup the database with all tables and data
@@ -16,16 +24,15 @@ def main():
 
 	isLoggedIn: bool = False
 	userID: int
-
+	print(trainLogo)
 	print("Welcome to the Train App")
 	print("Want to see the list of commands? Type 'help'")
 
 	while True:
-		userInput: str = inputSQLData("\nEnter a command: ")
+		userInput: str = inputSQLData("\nEnter a command: ").lower()
 
 		if userInput == "help":
 			print("=========================================")
-
 			print("Commands: ")
 			print("help - displays this message")
 			print("exit - exits the app")
@@ -41,8 +48,11 @@ def main():
 			break
 
 		if userInput == "register":
-			registerCustomerInfo()
-			# TODO login as the new customer
+			customerId = registerCustomerInfo()
+			if (customerId):
+				userID = customerId[0]
+				isLoggedIn = True
+				print("Logged in as Customer with ID: " + str(userID))
 
 		if userInput == "login":
 			customerId = login()
@@ -69,8 +79,9 @@ def main():
 				weekday = temp[1]
 				correctedWeekday = weekday[0].upper() + weekday[1:].lower()
 				station = temp[2]
-				allRoutes = getAllTrainRoutesOnDay(station, correctedWeekday)
-				print("All train routes for that stops at " + station + " on " + correctedWeekday + ": ")
+				correctedStationName = station[0].upper() + station[1:].lower()
+				allRoutes = getAllTrainRoutesOnDay(correctedStationName, correctedWeekday)
+				print("All train routes for that stops at " + correctedStationName + " on " + correctedWeekday + ": ")
 				for route in allRoutes:
 					routID = route[0]
 					print("Route: " + str(routID))
