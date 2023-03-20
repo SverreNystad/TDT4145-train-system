@@ -4,7 +4,7 @@
 
 
 from Station import printStations
-from TrainRoutes import getAllTrainRutesForTrip, getAllTrainRutesOnDay
+from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay
 from customer import getFutureOrders, login, printFutureOrdersAndTickets, registerCustomerInfo
 
 
@@ -71,7 +71,7 @@ def main():
 			if (len(temp) == 2):
 				weekday = temp[1]
 				stations = temp[2]
-				allRoutes = getAllTrainRutesOnDay(stations, weekday)
+				allRoutes = getAllTrainRoutesOnDay(stations, weekday)
 				print("All train routes for " + stations + " on " + weekday + ": ")
 				for route in allRoutes:
 					print("Route: " + route)
@@ -80,7 +80,7 @@ def main():
 				date = temp[1]
 				startStation = temp[2]
 				endStation = temp[3]
-				allRoutes = getAllTrainRutesForTrip(startStation, endStation, date)
+				allRoutes = getAllTrainRoutesForTrip(startStation, endStation, date)
 			
 
 

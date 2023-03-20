@@ -4,7 +4,7 @@ from database_config import DATABASE_NAME;
 
 DATABASE: str = DATABASE_NAME
 
-def getAllTrainRutesForTrip(startStation: str, endStation: str, date: str) -> list:
+def getAllTrainRoutesForTrip(startStation: str, endStation: str, date: str) -> list:
 	# Get all routes that match the start and end station
 	trips: list = findRoutesByTrip(startStation, endStation)
 	
@@ -34,7 +34,7 @@ def getAllRoutesWithStation(station: str) -> list:
 	connection.close()
 	return result
 
-def getAllTrainRutesOnDay(stationName: str, weekDay: str) -> list:
+def getAllTrainRoutesOnDay(stationName: str, weekDay: str) -> list:
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
