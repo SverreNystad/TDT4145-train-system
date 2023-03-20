@@ -7,6 +7,7 @@ from Station import printStations
 from TrainRoutes import getAllTrainRutesForTrip, getAllTrainRutesOnDay
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
+from inputHandler import inputSQLData
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
 	print("Want to see the list of commands? Type 'help'")
 
 	while True:
-		userInput: str = input("Enter a command: ")
+		userInput: str = inputSQLData("\nEnter a command: ")
 
 		if userInput == "help":
 			print("=========================================")
@@ -36,11 +37,6 @@ def main():
 			print("my tickets - lists all future tickets for the logged in Customer")
 			print("=========================================")
 
-		if (isSQLInjection(userInput)):
-			print("Possible SQL Injection detected")
-			print("Please do not do this again :)")
-			continue
-			
 		if userInput == "exit":
 			break
 
@@ -51,7 +47,7 @@ def main():
 		if userInput == "login":
 			customerId = login()
 			if (customerId):
-				userID = customerId
+				userID = customerId[0]
 				isLoggedIn = True
 				print("Logged in as Customer with ID: " + str(userID))
 			else:
@@ -69,38 +65,29 @@ def main():
 		
 		if userInput.startswith("train routes, "):
 			temp = userInput.split(", ")
-			if (len(temp) == 2):
-				weekday = temp[1]
-				stations = temp[2]
-				allRoutes = getAllTrainRutesOnDay(stations, weekday)
-				print("All train routes for " + stations + " on " + weekday + ": ")
-				for route in allRoutes:
-					print("Route: " + route)
-
 			if (len(temp) == 3):
+				weekday = temp[1]
+				correctedWeekday = weekday[0].upper() + weekday[1:].lower()
+				station = temp[2]
+				allRoutes = getAllTrainRutesOnDay(station, correctedWeekday)
+				print("All train routes for that stops at " + station + " on " + correctedWeekday + ": ")
+				for route in allRoutes:
+					routID = route[0]
+					print("Route: " + str(routID))
+
+			if (len(temp) == 4):
 				date = temp[1]
 				startStation = temp[2]
 				endStation = temp[3]
+				print("All train routes for " + startStation + " to " + endStation + " on " + date + ": ")
 				allRoutes = getAllTrainRutesForTrip(startStation, endStation, date)
+				for route in allRoutes:
+					print("Route: " + str(route))
 			
 
 
 
 
-def isSQLInjection(userInput: str) -> bool:
-	# Check if the user input contains SQL injection
-	if (userInput.find(";") != -1):
-		return True
-	if (userInput.find("--") != -1):
-		return True
-	if (userInput.find("\"") != -1):
-		return True
-	if (userInput.find("\'") != -1):
-		return True
-	if (userInput.find("/*") != -1):
-		return True
-	if (userInput.lower().find("select") != -1 or userInput.lower().find("drop") != -1 or userInput.lower().find("from") != -1):
-		return True
 
 if __name__ == "__main__":
 	main()

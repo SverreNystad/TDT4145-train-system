@@ -1,7 +1,8 @@
 from datetime import datetime
 import sqlite3
 
-from database_config import DATABASE_NAME;
+from database_config import DATABASE_NAME
+from inputHandler import inputSQLData;
 
 DATABASE: str = DATABASE_NAME
 ORDERID_INDEX = 0
@@ -9,9 +10,9 @@ ORDER_DATE_INDEX = 1
 
 
 def registerCustomerInfo():
-	customerName = input("Enter customer name: ")
-	customerEpost = input("Enter customer epost: ")
-	customerPhone = input("Enter customer phone: ")
+	customerName = inputSQLData("Enter customer name: ")
+	customerEpost = inputSQLData("Enter customer epost: ")
+	customerPhone = inputSQLData("Enter customer phone: ")
 	if (canCreateCustomer(customerEpost, customerPhone)):
 		postCustomer(customerName, customerEpost, customerPhone)
 	else:
@@ -50,7 +51,8 @@ def canCreateCustomer(customerEpost: str, customerPhone: str) -> bool:
 	return len(result) == 0
 
 def login() -> int:
-	customerEpost = input("Enter epost to login: ")
+	customerEpost = inputSQLData("Enter epost to login: ")
+
 	return getCustomer(customerEpost)
 
 def getCustomer(customerEpost: str) -> int:
@@ -58,7 +60,7 @@ def getCustomer(customerEpost: str) -> int:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT KundeID FROM Kunde WHERE Epost =:customerEpost", {"customerEpost": customerEpost})
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Epost =:customerEpost", {"customerEpost": customerEpost})
 	result = cursor.fetchone()
 	connection.close()
 	return result
@@ -110,7 +112,7 @@ def getCustomerHistory(CustomerID: str) -> list:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM KundeOrdre WHERE KundeID =:CustomerID", {"CustomerID": CustomerID})
+	cursor.execute("SELECT * FROM KundeOrdre WHERE Kundenummer =:CustomerID", {"CustomerID": CustomerID})
 	result = cursor.fetchall()
 	connection.commit()
 	connection.close()
@@ -131,4 +133,6 @@ if __name__ == "__main__":
 	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
 	postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
 	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+
+
 
