@@ -17,7 +17,15 @@ def inputSQLData(message: str) -> str:
 	userInput: str = input(message)
 	if isSQLInjection(userInput):
 		print("Possible SQL Injection detected")
-		print("Please do not do this again :)")
+		print("Please do not@ do this again :)")
 		return ""
 	else:
 		return userInput
+
+def convertSpecialCharacters(userInput: str) -> str:
+
+	userInput = userInput.replace("ø", "oe")
+	userInput = userInput.replace("æ", "ae")
+	userInput = userInput.replace("å", "aa")
+
+	return userInput
