@@ -20,16 +20,22 @@ def registerCustomerInfo():
 
 def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> bool:
     if (customerName == "" or customerEpost == "" or customerPhone == ""):
+        print("Illegal input due to: blank input")
         return False
-    if (customerName.isalpha() == False or customerPhone.isdigit() == False):
+    if all(not char.isalpha() and not char.isspace() for char in customerName):
+        print("Illegal input due to: Name must be alphabetic or space")
+        return False
+    if (customerPhone.isdigit() == False):
+        print("Illegal input due to: Name must be alphabetic and phone number must be numeric")
         return False
     if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1):
+        print("Illegal input due to: Epost must contain @ and .")
         return False
     return True
 
-def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> None:
+def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> int:
 	if (legalInput(customerName, customerEpost, customerPhone) == False):
-		print("Illegal input detected. Registration failed.")
+		print("Registration failed!")
 		return
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
@@ -39,6 +45,8 @@ def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> N
 	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
 	connection.commit()
 	connection.close()
+	print("Registration successful!")
+	return getCustomer(customerEpost)
 
 def canCreateCustomer(customerEpost: str, customerPhone: str) -> bool:
 	connection = sqlite3.connect(DATABASE)
@@ -51,7 +59,6 @@ def canCreateCustomer(customerEpost: str, customerPhone: str) -> bool:
 
 def login() -> int:
 	customerEpost = inputSQLData("Enter epost to login: ")
-
 	return getCustomer(customerEpost)
 
 def getCustomer(customerEpost: str) -> int:

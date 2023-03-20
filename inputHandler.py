@@ -23,9 +23,13 @@ def inputSQLData(message: str) -> str:
 		return userInput
 
 def convertSpecialCharacters(userInput: str) -> str:
-
 	userInput = userInput.replace("ø", "oe")
 	userInput = userInput.replace("æ", "ae")
 	userInput = userInput.replace("å", "aa")
+	return userInput
 
+def previewWithSpecialCharacters(userInput: str) -> str:
+	userInput = userInput.replace("oe", "ø")
+	userInput = userInput.replace("ae", "æ")
+	userInput = userInput.replace("aa", "å")
 	return userInput
