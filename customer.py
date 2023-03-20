@@ -8,7 +8,6 @@ DATABASE: str = DATABASE_NAME
 ORDERID_INDEX = 0
 ORDER_DATE_INDEX = 1
 
-
 def registerCustomerInfo():
 	customerName = inputSQLData("Enter customer name: ")
 	customerEpost = inputSQLData("Enter customer epost: ")

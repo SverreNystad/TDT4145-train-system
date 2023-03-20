@@ -83,11 +83,6 @@ def main():
 				allRoutes = getAllTrainRoutesForTrip(startStation, endStation, date)
 				for route in allRoutes:
 					print("Route: " + str(route))
-			
-
-
-
-
 
 if __name__ == "__main__":
 	main()
