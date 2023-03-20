@@ -3,13 +3,17 @@ This repo contains part two of the semester project for TDT4145.
 
 ## Changes to Database from delivery 1:
 * Added to each table to only create table if it does not exists.
-* IF NOT EXISTS
+  * IF NOT EXISTS
 
+* Make stasjonsNr from RuteStopp not unique
+  * Should be unique for each RuteID but not for all RuteStopp
+* Make stasjonsNr from BanePasserer not unique
+  * Should be unique for each Banenavn but not for all BanePasserer
 
 What user stories shall delivery 2 be programmed on:
 * User story C [DONE] NEED REVIEW
 * User story D
-* User story E
+* User story E [DONE] NEED REVIEW
 * User story G
 * User story H
 
