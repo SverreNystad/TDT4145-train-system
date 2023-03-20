@@ -12,7 +12,10 @@ def registerCustomerInfo():
 	customerName = input("Enter customer name: ")
 	customerEpost = input("Enter customer epost: ")
 	customerPhone = input("Enter customer phone: ")
-	postCustomer(customerName, customerEpost, customerPhone)
+	if (canCreateCustomer(customerEpost, customerPhone)):
+		postCustomer(customerName, customerEpost, customerPhone)
+	else:
+		print("Customer already exists")
 
 
 def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> bool:
@@ -20,7 +23,7 @@ def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> boo
         return False
     if (customerName.isalpha() == False or customerPhone.isdigit() == False):
         return False
-    if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1 or customerEpost.find("@") > customerEpost.find(".")):
+    if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1):
         return False
     return True
 
@@ -32,11 +35,19 @@ def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> N
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (Navn =:customerName, Epost =:customerEpost, TlfNr =:customerPhone)", {"customerName": customerName, "customerEpost": customerEpost, "customerPhone": customerPhone})
-
-	# cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
+	# cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (customerName, customerEpost, customerPhone);", {"customerName": customerName, "customerEpost": customerEpost, "customerPhone": customerPhone})
+	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
 	connection.commit()
 	connection.close()
+
+def canCreateCustomer(customerEpost: str, customerPhone: str) -> bool:
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	cursor.execute("SELECT * FROM Kunde WHERE Epost =:customerEpost OR TlfNr =:customerPhone;", {"customerEpost": customerEpost, "customerPhone": customerPhone})
+	result = cursor.fetchall()
+	connection.close()
+	return len(result) == 0
 
 def login() -> int:
 	customerEpost = input("Enter epost to login: ")
@@ -115,3 +126,9 @@ def getCustomerTicketBy(CusomerOrderId: str) -> list:
 	connection.commit()
 	connection.close()
 	return result
+
+if __name__ == "__main__":
+	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+	postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
+	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+
