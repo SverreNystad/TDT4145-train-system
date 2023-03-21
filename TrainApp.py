@@ -1,8 +1,8 @@
 from Station import printStations
-from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay
+from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay, printAllTrainRoutesForTrip
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
-from inputHandler import inputSQLData
+from inputHandler import convertStationName, inputSQLData
 
 trainLogo = '''
   _______     _______     _______     _______     ___       
@@ -33,7 +33,7 @@ def main():
 			print("exit - exits the app")
 			print("stations - lists all stations")
 			print("train routes, 'weekday', 'station' - lists all train routes for a specific station on a specific weekday REQUIRES 2 ARGUMENTS (weekday, station)")
-			print("train routes, 'date', 'start station', 'end station' - lists all train routes for a specific date and start and end station REQUIRES 3 ARGUMENTS (date, start station, end station)")
+			print("train routes, 'date', 'time', 'start station', 'end station' - lists all train routes for a specific date and start and end station REQUIRES 4 ARGUMENTS (date, time, start station, end station)")
 			print("register - registers as a Customer")
 			print("login - logs in as a Customer")
 			print("my tickets - lists all future tickets for the logged in Customer")
@@ -81,14 +81,13 @@ def main():
 					routID = route[0]
 					print("Route: " + str(routID))
 
-			if (len(temp) == 4):
+			if (len(temp) == 5):
 				date = temp[1]
-				startStation = temp[2]
-				endStation = temp[3]
+				time = temp[2]
+				startStation = convertStationName(temp[3])
+				endStation = convertStationName(temp[4])
 				print("All train routes for " + startStation + " to " + endStation + " on " + date + ": ")
-				allRoutes = getAllTrainRoutesForTrip(startStation, endStation, date)
-				for route in allRoutes:
-					print("Route: " + str(route))
+				printAllTrainRoutesForTrip(startStation, endStation, date, time)
 
 if __name__ == "__main__":
 	main()

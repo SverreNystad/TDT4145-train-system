@@ -33,3 +33,8 @@ def previewWithSpecialCharacters(userInput: str) -> str:
 	userInput = userInput.replace("ae", "æ")
 	userInput = userInput.replace("aa", "å")
 	return userInput
+
+def convertStationName(stationName: str) -> str:
+	# Convert the station name to a format that can be used in SQL
+	convertedStationName: str = stationName[0].upper() + stationName[1:].lower()
+	return convertedStationName
