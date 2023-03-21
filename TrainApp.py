@@ -1,8 +1,3 @@
-
-
-
-
-
 from Station import printStations
 from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
@@ -37,8 +32,8 @@ def main():
 			print("help - displays this message")
 			print("exit - exits the app")
 			print("stations - lists all stations")
-			print("train routes, [weekday], [station] - lists all train routes for a specific station on a specific weekday REQUIRES 2 ARGUMENTS (weekday, station)")
-			print("train routes, [date], [start station], [end station] - lists all train routes for a specific date and start and end station REQUIRES 3 ARGUMENTS (date, start station, end station)")
+			print("train routes, 'weekday', 'station' - lists all train routes for a specific station on a specific weekday REQUIRES 2 ARGUMENTS (weekday, station)")
+			print("train routes, 'date', 'start station', 'end station' - lists all train routes for a specific date and start and end station REQUIRES 3 ARGUMENTS (date, start station, end station)")
 			print("register - registers as a Customer")
 			print("login - logs in as a Customer")
 			print("my tickets - lists all future tickets for the logged in Customer")
