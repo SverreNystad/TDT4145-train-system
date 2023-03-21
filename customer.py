@@ -34,14 +34,13 @@ def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> boo
     return True
 
 def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> int:
-	if (legalInput(customerName, customerEpost, customerPhone) == False):
+	if (legalInput(customerName, customerEpost, customerPhone) == False or canCreateCustomer(customerEpost, customerPhone) == False):
 		print("Registration failed!")
 		return
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	# cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (customerName, customerEpost, customerPhone);", {"customerName": customerName, "customerEpost": customerEpost, "customerPhone": customerPhone})
 	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
 	connection.commit()
 	connection.close()
@@ -71,25 +70,6 @@ def getCustomer(customerEpost: str) -> int:
 	connection.close()
 	return result
 
-def getFutureTickets(CustomerID: str) -> list:
-	# Get all orders
-	history: list = getCustomerHistory(CustomerID)
-	orderToTicket: dict = {}
-
-	for order in history:
-		orderToTicket[order] = getCustomerTicketBy(order[ORDERID_INDEX])
-
-	futureTickets: list = []
-
-	for order in orderToTicket:
-		tickets: list = orderToTicket[order]
-
-		# Check for each ticket that it is in the ticket is in the future
-		for ticket in tickets:
-			if (ticket[ORDER_DATE_INDEX] > datetime.now()): # I do not know if it is possible to compare a datetime object with a string
-				futureTickets.append(ticket)
-	
-	return futureTickets
 
 def printFutureOrdersAndTickets(CustomerID: str) -> None:
 	# Get all orders
@@ -106,12 +86,12 @@ def printFutureOrdersAndTickets(CustomerID: str) -> None:
 
 		# Check for each ticket that it is in the ticket is in the future
 		for ticket in tickets:
-			if (ticket[ORDER_DATE_INDEX] > datetime.now()): # I do not know if it is possible to compare a datetime object with a string
+			if (getDateOfTicket(ticket[ORDER_DATE_INDEX]) > datetime.now()): #I do not know if it is possible to compare a datetime object with a string
 				futureTickets.append(ticket)
-		print("Ordernummer: " + order[ORDERID_INDEX] + " Order date: " + order[ORDER_DATE_INDEX])
+		print("Ordernummer: " + str(order[ORDERID_INDEX]) + " Order date: " + str(order[ORDER_DATE_INDEX]))
 
 		for futureTicket in futureTickets:
-			print("Ticket: " + futureTicket)
+			printTicket(futureTicket)
 
 def getCustomerHistory(CustomerID: str) -> list:
 	# Create a connection to the database
@@ -135,10 +115,39 @@ def getCustomerTicketBy(CusomerOrderId: str) -> list:
 	connection.close()
 	return result
 
+def getDateOfTicket(tourId: str) -> datetime:
+	# Create a connection to the database
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	cursor.execute("SELECT TurDato FROM Togtur WHERE TurID =:tourID", {"tourID": tourId})
+	result = cursor.fetchone()
+	connection.commit()
+	connection.close()
+	date: str = result[0]
+	return datetime.strptime(date, "%Y-%m-%d")
+
+def printTicket(ticket: list) -> None:
+	print("Ticket with id " + str(ticket[1]) + " for tour with id: " + str(ticket[0]) + " going the " + str(getDateOfTicket(ticket[0])) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]))
+
 if __name__ == "__main__":
-	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
-	postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
-	print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+	# postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
+	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+
+	def insertOrder():
+		# Create a connection to the database
+		connection = sqlite3.connect(DATABASE)
+		# Create a cursor to execute SQL commands
+		cursor = connection.cursor()
+		cursor.execute("INSERT INTO KundeOrdre (Ordrenummer, KjoepsTidspunkt, Kundenummer) VALUES (1, '2023-5-1', 1)")
+		cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,1,1,2,2)")
+		cursor.execute("SELECT * FROM KundeOrdre")
+		connection.commit()
+		connection.close()
+	# insertOrder()
+
+	printFutureOrdersAndTickets(1)
 
 
 
