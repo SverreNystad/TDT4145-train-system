@@ -34,17 +34,6 @@ def sortRoutesByDayAndTime(routes: list) -> list:
 		routes.sort(key=lambda route: weekdays.index(route[0][2]))
 	return routes
 
-def routeToString(inputRoute: list) -> str:
-	isStartStation: bool = False
-	route: list = inputRoute[0]
-	station = previewWithSpecialCharacters(route[1])
-	if (route[3] == None):
-		isStartStation = True
-	if isStartStation:
-		return "Route: " + str(route[0]) + " starts on station " + station + " and departs " + route[4] + " on " + route[2] + "."
-	else:
-		return "Route: " + str(route[0]) + " ends on station " + station + " and arrives " + route[3] + "."
-
 def getAllTrainRoutesForTrip(startStation: str, endStation: str, date: str, time: str) -> list:
 	convertedStartStation = convertSpecialCharacters(startStation)
 	convertedEndStation = convertSpecialCharacters(endStation)
