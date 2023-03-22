@@ -21,9 +21,10 @@ def getStations() -> list:
 
 def printStations() -> None:
 	stations: list = getStations()
-	print("Stasjoner: ")
+	print("Stasjoner")
+	longest_name = (max(len(x[0]) for x in stations))
 	for station in stations:
-		print("Stasjonsnavn: " + previewWithSpecialCharacters(station[STATION_NAME_INDEX]) + " Moh: " + str(station[MOH_INDEX]))
+		print("Navn: " + previewWithSpecialCharacters(station[STATION_NAME_INDEX]).ljust(longest_name + 5) + "moh: " + str(station[MOH_INDEX]) + "m")
 
 if __name__ == "__main__":
 	printStations()

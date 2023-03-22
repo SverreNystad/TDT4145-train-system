@@ -8,14 +8,16 @@ DATABASE: str = DATABASE_NAME
 
 def printAllTrainRoutesForTrip(startStation: str, endStation: str, date: str, time: str) -> None:
 	routes: list = getAllTrainRoutesForTrip(startStation, endStation, date, time)
-
+	print(routes)
 	# sort routes by day and time
 	sortRoutesByDayAndTime(routes)
 
 	for i in range(0, len(routes), 2):
-		start: str = routeToString(routes[i])
-		end: str = routeToString(routes[i+1])
-		print(start + " And " + end)
+		startStation: str = previewWithSpecialCharacters(routes[i][0][1])
+		endStation: str = previewWithSpecialCharacters(routes[i+1][0][1])
+		start: str = f"Route {str(routes[i][0][0])} starts on station {startStation} and departs {routes[i][0][4]}, {routes[i][0][2]} {routes[i][1]}"
+		end: str = f" arrives at {endStation} at {routes[i+1][0][3]}."
+		print(start + ", and" + end)
 
 def sortRoutesByDayAndTime(routes: list) -> list:
 	# Sort routes by day and time
@@ -29,7 +31,7 @@ def sortRoutesByDayAndTime(routes: list) -> list:
 		"Søndag"
 	]
 	if len(routes) > 0:
-		routes.sort(key=lambda x: weekdays.index(x[0][2]))
+		routes.sort(key=lambda route: weekdays.index(route[0][2]))
 	return routes
 
 def routeToString(inputRoute: list) -> str:
@@ -49,32 +51,44 @@ def getAllTrainRoutesForTrip(startStation: str, endStation: str, date: str, time
 	# Get all routes that match the start and end station
 	trips: list = findRoutesByTrip(convertedStartStation, convertedEndStation)
 	# Get all routes from trips that match the date and the next day
-	tripDate: str = convertDateToWeekDay(date)
-	dayAftertripDate: str = DayAfterTomorrow(tripDate)
+	tripDay: str = convertDateToWeekDay(date)
+	dayAfterTripDay: str = dayAfterTomorrow(tripDay)
+	dateAfter: str = nextDate(date)
 
 	routesForTrip: list = []
 	for trip in trips:
-		startFirst: list = getAllRouteDrivingOn(trip, convertedStartStation, tripDate, time)
-		endFirst: list = getAllRouteDrivingOn(trip, convertedEndStation, tripDate, time)
-		startSecond: list = getAllRouteDrivingOn(trip, convertedStartStation, dayAftertripDate, time)
-		endSecond: list = getAllRouteDrivingOn(trip, convertedEndStation, dayAftertripDate, time)
+		startFirst: list = getAllRouteDrivingOn(trip, convertedStartStation, tripDay, time)
+		endFirst: list = getAllRouteDrivingOn(trip, convertedEndStation, tripDay, time)
+		startSecond: list = getAllRouteDrivingOn(trip, convertedStartStation, dayAfterTripDay, time)
+		endSecond: list = getAllRouteDrivingOn(trip, convertedEndStation, dayAfterTripDay, time)
 		if len(startFirst) == 0 or len(endFirst) == 0 or len(startSecond) == 0 or len(endSecond) == 0:
 			continue
-
+	
+		startFirst.append(date)
 		routesForTrip.append(startFirst)
 		routesForTrip.append(endFirst)
 
+		startSecond.append(dateAfter)
 		routesForTrip.append(startSecond)
 		routesForTrip.append(endSecond)
 	return routesForTrip
 
 def convertDateToWeekDay(date: str) -> str:
 	# Convert the date to a weekday
-	# DD.MM.YEAR -> Monday
+	# DD.MM.YYYY -> Monday
 	day, month, year = date.split(".")
 	datetime_object = datetime.datetime(int(year), int(month), int(day))
 	weekday = datetime_object.strftime("%A")
 	return translateWeekDayToNorwegian(weekday)
+
+def nextDate(date: str) -> str:
+	# Get date after date
+	# DD.MM.YYYY -> DD.MM.YYYY
+	day, month, year = date.split(".")
+	datetime_object = datetime.datetime(int(year), int(month), int(day))
+	datetime_next_day = datetime_object + datetime.timedelta(days=1)
+	next_day = datetime_next_day.strftime("%d.%m.%Y")
+	return next_day
 
 def translateWeekDayToNorwegian(weekday: str) -> str:
 	# Translate the weekday to norwegian
@@ -89,7 +103,7 @@ def translateWeekDayToNorwegian(weekday: str) -> str:
 	}
 	return weekdays[weekday]
 
-def DayAfterTomorrow(day):
+def dayAfterTomorrow(day):
 	# Get the day after
 	weekdays =	{
 	"Mandag": "Tirsdag",
@@ -112,7 +126,7 @@ def getAllRouteDrivingOn(routeID: int, station: str, day: str, time: str) -> lis
 	routeTimes = cursor.fetchall()
 	connection.close()
 	
-	allRoutesBeforeTime = []
+	allRoutesAfterTime = []
 	for routetime in routeTimes:
 		arrival = routetime[RUTETIDER_ARRIVAL_INDEX]
 		parting = routetime[RUTETIDER_PARTING_INDEX]
@@ -122,8 +136,8 @@ def getAllRouteDrivingOn(routeID: int, station: str, day: str, time: str) -> lis
 			parting = arrival
 			
 		if arrival > time and parting > time:
-			allRoutesBeforeTime.append(routetime)
-	return allRoutesBeforeTime
+			allRoutesAfterTime.append(routetime)
+	return allRoutesAfterTime
 
 
 def findRoutesByTrip(startStation: str, endStation: str) -> list: # Could also be done by sql query
@@ -177,7 +191,7 @@ def getAllTrainRoutesOnDay(stationName: str, weekDay: str) -> list:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT RuteID FROM RuteTider WHERE Stasjonsnavn =:stationName AND Ukedag =:weekDay", {"stationName": correctedStation, "weekDay": convertedWeekDay})
+	cursor.execute("SELECT RuteID, Ankomst, Avgang FROM RuteTider WHERE Stasjonsnavn =:stationName AND Ukedag =:weekDay", {"stationName": correctedStation, "weekDay": convertedWeekDay})
 	result = cursor.fetchall()
 	connection.commit()
 	connection.close()

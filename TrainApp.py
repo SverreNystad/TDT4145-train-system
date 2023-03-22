@@ -32,8 +32,8 @@ def main():
 			print("help - displays this message")
 			print("exit - exits the app")
 			print("stations - lists all stations")
-			print("train routes, 'weekday', 'station' - lists all train routes for a specific station on a specific weekday REQUIRES 2 ARGUMENTS (weekday, station)")
-			print("train routes, 'date', 'time', 'start station', 'end station' - lists all train routes for a specific date and start and end station REQUIRES 4 ARGUMENTS (date, time, start station, end station)")
+			print("train routes, <weekday>, <station> - lists all train routes for a specific station on a specific weekday REQUIRES 2 ARGUMENTS (weekday, station)")
+			print("train routes, <DD.MM.YYYY>, <HH:MM>, <start station>, <end station> - lists all train routes for a specific date and start and end station REQUIRES 4 ARGUMENTS (date, time, start station, end station)")
 			print("register - registers as a Customer")
 			print("login - logs in as a Customer")
 			print("my tickets - lists all future tickets for the logged in Customer")
@@ -76,17 +76,29 @@ def main():
 				station = temp[2]
 				correctedStationName = station[0].upper() + station[1:].lower()
 				allRoutes = getAllTrainRoutesOnDay(correctedStationName, correctedWeekday)
-				print("All train routes for that stops at " + correctedStationName + " on " + correctedWeekday + ": ")
+				print("All train routes that stop at " + correctedStationName + " on " + correctedWeekday + ": ")
 				for route in allRoutes:
-					routID = route[0]
-					print("Route: " + str(routID))
+					routeID = route[0]
+					arrival = route[1]
+					departure = route[2]
+					routeInfo: str = "Route: " + str(routeID)
+					if arrival:
+						routeInfo += ", Arrival: " + arrival
+					else:
+						routeInfo += ", the station is a start station"
+					if departure:
+						routeInfo += ", Departure: " + departure
+					else:
+						routeInfo += ", the station is an end station"
+					print(routeInfo)
+
 
 			if (len(temp) == 5):
 				date = temp[1]
 				time = temp[2]
 				startStation = convertStationName(temp[3])
 				endStation = convertStationName(temp[4])
-				print("All train routes for " + startStation + " to " + endStation + " on " + date + ": ")
+				print("All train routes from " + startStation + " to " + endStation + " on " + date + ": ")
 				printAllTrainRoutesForTrip(startStation, endStation, date, time)
 
 if __name__ == "__main__":
