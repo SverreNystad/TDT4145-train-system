@@ -31,6 +31,9 @@ def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> boo
     if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1):
         print("Illegal input due to: Epost must contain @ and .")
         return False
+    if (len(customerPhone) < 8):
+        print("Illegal input due to: Phone number must be at least 8 digits")
+        return False
     return True
 
 def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> int:

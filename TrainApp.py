@@ -25,7 +25,8 @@ def main():
 
 	while True:
 		userInput: str = inputSQLData("\nEnter a command: ").lower()
-
+		print("")
+		
 		if userInput == "help":
 			print("=========================================")
 			print("Commands: ")
@@ -39,17 +40,17 @@ def main():
 			print("my tickets - lists all future tickets for the logged in Customer")
 			print("=========================================")
 
-		if userInput == "exit":
+		elif userInput == "exit":
 			break
 
-		if userInput == "register":
+		elif userInput == "register":
 			customerId = registerCustomerInfo()
 			if (customerId):
 				userID = customerId[0]
 				isLoggedIn = True
 				print("Logged in as Customer with ID: " + str(userID))
 
-		if userInput == "login":
+		elif userInput == "login":
 			customerId = login()
 			if (customerId):
 				userID = customerId[0]
@@ -58,21 +59,23 @@ def main():
 			else:
 				print("Login failed try another epost")
 
-		if userInput == "my tickets":
+		elif userInput == "my tickets":
+			# TODO: add order time, and fix route time
 			if (isLoggedIn):
 				print("Future tickets for Customer with ID: " + str(userID))
 				printFutureOrdersAndTickets(userID)
 			else:
 				print("You are not logged in")
 	
-		if userInput == "stations":
+		elif userInput == "stations":
 			printStations()
 		
-		if userInput.startswith("train routes, "):
+		elif userInput.startswith("train routes, "):
 			temp = userInput.split(", ")
 			if (len(temp) == 3):
 				weekday = temp[1]
 				correctedWeekday = weekday[0].upper() + weekday[1:].lower()
+				
 				station = temp[2]
 				correctedStationName = station[0].upper() + station[1:].lower()
 				allRoutes = getAllTrainRoutesOnDay(correctedStationName, correctedWeekday)
@@ -100,6 +103,7 @@ def main():
 				endStation = convertStationName(temp[4])
 				print("All train routes from " + startStation + " to " + endStation + " on " + date + ": ")
 				printAllTrainRoutesForTrip(startStation, endStation, date, time)
-
+		else:
+			print("Command not found. Type 'help' to see all commands")
 if __name__ == "__main__":
 	main()

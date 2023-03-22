@@ -36,3 +36,34 @@ def convertStationName(stationName: str) -> str:
 	# Convert the station name to a format that can be used in SQL
 	convertedStationName: str = stationName[0].upper() + stationName[1:].lower()
 	return convertedStationName
+
+def isEnglishWeekDay(weekday: str) -> bool:
+	# Check if the weekday is in english
+	weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+	return weekday in weekdays
+
+def translateWeekDayToNorwegian(weekday: str) -> str:
+	# Translate the weekday to norwegian
+	weekdays = {
+		"Monday": "Mandag",
+		"Tuesday": "Tirsdag",
+		"Wednesday": "Onsdag",
+		"Thursday": "Torsdag",
+		"Friday": "Fredag",
+		"Saturday": "Lørdag",
+		"Sunday": "Søndag"
+	}
+	return weekdays[weekday]
+
+def dayAfterTomorrow(day):
+	# Get the day after
+	weekdays =	{
+	"Mandag": "Tirsdag",
+	"Tirsdag": "Onsdag",
+	"Onsdag": "Torsdag",
+	"Torsdag": "Fredag",
+	"Fredag": "Lørdag",
+	"Lørdag": "Søndag",
+	"Søndag": "Mandag"
+	}
+	return weekdays[day]

@@ -8,14 +8,13 @@ DATABASE: str = DATABASE_NAME
 
 def printAllTrainRoutesForTrip(startStation: str, endStation: str, date: str, time: str) -> None:
 	routes: list = getAllTrainRoutesForTrip(startStation, endStation, date, time)
-	print(routes)
 	# sort routes by day and time
 	sortRoutesByDayAndTime(routes)
 
 	for i in range(0, len(routes), 2):
 		startStation: str = previewWithSpecialCharacters(routes[i][0][1])
 		endStation: str = previewWithSpecialCharacters(routes[i+1][0][1])
-		start: str = f"Route {str(routes[i][0][0])} starts on station {startStation} and departs {routes[i][0][4]}, {routes[i][0][2]} {routes[i][1]}"
+		start: str = f"Route {str(routes[i][0][0])} departs from {startStation} at {routes[i][0][4]}, {routes[i][0][2]} {routes[i][1]}"
 		end: str = f" arrives at {endStation} at {routes[i+1][0][3]}."
 		print(start + ", and" + end)
 
