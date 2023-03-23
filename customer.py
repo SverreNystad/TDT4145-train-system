@@ -136,6 +136,30 @@ def getDateOfTicket(tripId: str) -> datetime:
 def printTicket(ticket: list) -> None:
 	print("Ticket with id " + str(ticket[1]) + " for trip with id: " + str(ticket[0]) + " going the " + str(getDateOfTicket(ticket[0])) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]))
 
+def insertOrder():
+	# Create a connection to the database
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
+	cursor.execute("INSERT INTO KundeOrdre (Ordrenummer, KjoepsTidspunkt, Kundenummer) VALUES (1, '2023-5-1', 1)")
+	cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,1,1,2,2)")
+	cursor.execute("SELECT * FROM KundeOrdre")
+	connection.commit()
+	connection.close()
+#insertOrder()
+
+def getCustomerNrByMailOrPhone(identificator: str) -> int:
+	# Create a connection to the database
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	#Har vi check slik at epost må ha @ og tlf nr ikke kan ha @? Er bra å ha for denne spørringen
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Kunde.Epost=:id OR Kunde.TlfNr=:id", {"id": identificator})
+	a=cursor.fetchone()
+	if a==None:
+		return -1
+	return a[0]
 if __name__ == "__main__":
 	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
 	# postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
