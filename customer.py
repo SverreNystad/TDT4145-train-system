@@ -121,12 +121,12 @@ def getCustomerTicketBy(CusomerOrderId: str) -> list:
 	connection.close()
 	return result
 
-def getDateOfTicket(tourId: str) -> datetime:
+def getDateOfTicket(tripId: str) -> datetime:
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT TurDato FROM Togtur WHERE TurID =:tourID", {"tourID": tourId})
+	cursor.execute("SELECT TurDato FROM Togtur WHERE TurID =:tripId", {"tripId": tripId})
 	result = cursor.fetchone()
 	connection.commit()
 	connection.close()
@@ -160,7 +160,6 @@ def getCustomerNrByMailOrPhone(identificator: str) -> int:
 	if a==None:
 		return -1
 	return a[0]
-
 
 if __name__ == "__main__":
 	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))

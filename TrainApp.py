@@ -34,9 +34,15 @@ def main():
 			print("exit - exits the app")
 			print("stations - lists all stations")
 			print("train routes, <weekday>, <station> - lists all train routes for a specific station on a specific weekday REQUIRES 2 ARGUMENTS (weekday, station)")
-			print("train routes, <DD.MM.YYYY>, <HH:MM>, <start station>, <end station> - lists all train routes for a specific date and start and end station REQUIRES 4 ARGUMENTS (date, time, start station, end station)")
+			print("              for example, to see all routes going past station A on Monday, write 'train routes, monday, A'.")
+			print("train trips, <DD.MM.YYYY>, <HH:MM>, <start station>, <end station> - lists all train trips for a specific date and start and end station REQUIRES 4 ARGUMENTS (date, time, start station, end station)")
+			print("             for example, to see all trips on 01.01.2023 and 02.01.2023 after 00:00 on 01.01.2023 from station A to B, write 'train trips, 01.01.2023, 00:00, A, B'.")
 			print("register - registers as a Customer")
 			print("login - logs in as a Customer")
+			print("tickets, <start station>, <end station>, <trip ID> - lists all available tickets between a start station and an end station for a given route")
+			print("         for example, to see all available tickets from station A to B on trip 1, write 'tickets, A, B, 1'")
+			print("buy ticket, <start station>, <end station>, <trip ID>, [<seat/bed number>, <wagon number>] - reserve a seat/bed in a specific wagon between a start station and an end station for a given route")
+			print("            for example, to buy a two tickets from A to B on trip 1, write 'buy ticket, A, B, 1, [1, 1], [2, 1]' for seats 1 and 2 in wagon 1")
 			print("my tickets - lists all future tickets for the logged in Customer")
 			print("=========================================")
 
@@ -97,7 +103,8 @@ def main():
 						routeInfo += ", the station is an end station"
 					print(routeInfo)
 
-
+		elif (userInput.startswith("train trips, ")):
+			temp = userInput.split(", ")
 			if (len(temp) == 5):
 				date = temp[1]
 				time = temp[2]
@@ -105,6 +112,28 @@ def main():
 				endStation = convertStationName(temp[4])
 				print("All train routes from " + startStation + " to " + endStation + " on " + date + ": ")
 				printAllTrainRoutesForTrip(startStation, endStation, date, time)
+		
+		elif userInput.startswith("tickets, "):
+			temp = userInput.split(", ")
+			if (len(temp) == 5):
+				startStation = convertStationName(temp[1])
+				endStation = convertStationName(temp[2])
+				routeID = temp[3]
+				print("All available tickets from " + startStation + " to " + endStation + " on route " + routeID + ": ")
+				
+			
+
+		elif userInput.startswith("buy ticket, "):
+			temp = userInput.split(", ")
+			if (len(temp) == 7):
+				if (isLoggedIn):
+					startStation = convertStationName(temp[1])
+					endStation = convertStationName(temp[2])
+					routeID = temp[3]
+					seatNumber = temp[4]
+					wagonNumber = temp[5]
+
+					print("Buying ticket from " + startStation + " to " + endStation + " on route " + routeID + " in wagon " + wagonNumber + " seat " + seatNumber + " for Customer with ID: " + str(userID))
 		else:
 			print("Command not found. Type 'help' to see all commands")
 if __name__ == "__main__":

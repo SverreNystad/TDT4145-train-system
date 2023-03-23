@@ -1,21 +1,35 @@
 
+from database_config import DATABASE_NAME
+from inputHandler import convertSpecialCharacters, dayAfterTomorrow, previewWithSpecialCharacters, translateWeekDayToNorwegian
+import sqlite3
+from TrainTrips import getAllStationsForTrip
 
-def wagonIsSleepingWagon(tourId: int, wagonNr: int) -> bool:
-	pass
+DATABASE: str = DATABASE_NAME
 
-def getWagonType(tourId: int, wagonNr: int) -> str:
-	pass
+def getWagonTypes(tripId: int) -> list:
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	cursor.execute("""SELECT * FROM Billett NATURAL JOIN VognForekomst NATURAL JOIN Vogn
+	WHERE TurID =:tripId;""", {"tripId": tripId})
+	results = cursor.fetchall()
+	connection.close()
+	return results
 
-def getCompartmentOwner(tourId: int, wagonNr: int, groupNr: int, placeNr: int) -> int:
+def getCompartmentOwner(tripId: int, wagonNr: int, groupNr: int, placeNr: int) -> int:
     pass
 
-def buyTicket(tourId: int, wagonNr: int, groupNr: int, placeNr: int, customerId: int) -> None:
+def buyTicket(tripId: int, wagonNr: int, groupNr: int, placeNr: int, customerId: int) -> None:
 	pass
 
-def canBuyTicket(tourId: int, wagonNr: int, groupNr: int, placeNr: int) -> bool:
+def canBuyTicket(tripId: int, wagonNr: int, groupNr: int, placeNr: int) -> bool:
 	pass
 
-def seetingIsOccupied(tourId: int, wagonNr: int, groupNr: int, placeNr: int) -> bool:
+def seetingIsOccupied(tripId: int, wagonNr: int, groupNr: int, placeNr: int) -> bool:
 	pass
 
-# def 
+def getSoldTickets(tripId: int, startStation: str, endStation: str) -> list:
+
+	pass
+
+if __name__ == "__main__":
+	print(getWagonTypes(1))

@@ -36,19 +36,18 @@ def sortRoutesByDayAndTime(routes: list) -> list:
 def getAllTrainRoutesForTrip(startStation: str, endStation: str, date: str, time: str) -> list:
 	convertedStartStation = convertSpecialCharacters(startStation)
 	convertedEndStation = convertSpecialCharacters(endStation)
-	# Get all routes that match the start and end station
+	# Get all trips that match the start and end station
 	trips: list = findRoutesByTrip(convertedStartStation, convertedEndStation)
-	# Get all routes from trips that match the date and the next day
 	tripDay: str = convertDateToWeekDay(date)
 	dayAfterTripDay: str = dayAfterTomorrow(tripDay)
 	dateAfter: str = nextDate(date)
 
 	routesForTrip: list = []
 	for trip in trips:
-		startFirst: list = getAllRouteDrivingOn(trip, convertedStartStation, tripDay, time)
-		endFirst: list = getAllRouteDrivingOn(trip, convertedEndStation, tripDay, time)
-		startSecond: list = getAllRouteDrivingOn(trip, convertedStartStation, dayAfterTripDay, time)
-		endSecond: list = getAllRouteDrivingOn(trip, convertedEndStation, dayAfterTripDay, time)
+		startFirst: list = getAllRoutesDrivingOn(trip, convertedStartStation, tripDay, time)
+		endFirst: list = getAllRoutesDrivingOn(trip, convertedEndStation, tripDay, time)
+		startSecond: list = getAllRoutesDrivingOn(trip, convertedStartStation, dayAfterTripDay, time)
+		endSecond: list = getAllRoutesDrivingOn(trip, convertedEndStation, dayAfterTripDay, time)
 		if len(startFirst) == 0 or len(endFirst) == 0 or len(startSecond) == 0 or len(endSecond) == 0:
 			continue
 	
@@ -79,7 +78,7 @@ def nextDate(date: str) -> str:
 	return next_day
 
 
-def getAllRouteDrivingOn(routeID: int, station: str, day: str, time: str) -> list:
+def getAllRoutesDrivingOn(routeID: int, station: str, day: str, time: str) -> list:
 	RUTETIDER_ARRIVAL_INDEX = 3
 	RUTETIDER_PARTING_INDEX = 4
 
@@ -103,7 +102,7 @@ def getAllRouteDrivingOn(routeID: int, station: str, day: str, time: str) -> lis
 	return allRoutesAfterTime
 
 
-def findRoutesByTrip(startStation: str, endStation: str) -> list: # Could also be done by sql query
+def findRoutesByTrip(startStation: str, endStation: str) -> list: # TODO: Could also be done by sql query
 	# Get all routes that match the start and end station
 	allRoutesWithStartStation = getAllRoutesWithStation(startStation)
 	allRoutesWithEndStation = getAllRoutesWithStation(endStation)
@@ -154,12 +153,29 @@ def getAllTrainRoutesOnDay(stationName: str, weekDay: str) -> list:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT RuteID, Ankomst, Avgang FROM RuteTider WHERE Stasjonsnavn =:stationName AND Ukedag =:weekDay", {"stationName": correctedStation, "weekDay": convertedWeekDay})
+	cursor.execute("SELECT RuteID, Ankomst, Avgang FROM RuteTider WHERE Stasjonsnavn =:stationName AND Ukedag =:weekDay ORDER BY VognForekomst.VognNummer", {
+	               "stationName": correctedStation, "weekDay": convertedWeekDay})
 	result = cursor.fetchall()
 	connection.commit()
 	connection.close()
 	return result
 
+
+def getTrainSetup(tripId: int) -> list:
+	"""
+	Will give a 2d list with each element filled with these values: 
+	[VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering]
+	"""
+
+	# Find VognOppsettID for tripId
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	cursor.execute("SELECT VognForekomst.VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering FROM VognOppsett, Togrute, Togtur NATURAL JOIN VognForekomst NATURAL JOIN Vogn WHERE VognOppsett.VognOppsettID = Togrute.RuteID  AND Togrute.RuteID = Togtur.TurID AND Togtur.TurID =:tripId", {
+	               "tripId": tripId})
+	vognOppsettData = cursor.fetchall()
+	connection.commit()
+	connection.close()
+	return vognOppsettData
 
 if __name__ == "__main__":
 	# print(getAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00"))
