@@ -41,8 +41,8 @@ def main():
 			print("login - logs in as a Customer")
 			print("tickets, <start station>, <end station>, <trip ID> - lists all available tickets between a start station and an end station for a given route")
 			print("         for example, to see all available tickets from station A to B on trip 1, write 'tickets, A, B, 1'")
-			print("buy ticket, <start station>, <end station>, <trip ID>, [<seat/bed number>, <wagon number>] - reserve a seat/bed in a specific wagon between a start station and an end station for a given route")
-			print("            for example, to buy a two tickets from A to B on trip 1, write 'buy ticket, A, B, 1, [1, 1], [2, 1]' for seats 1 and 2 in wagon 1")
+			print("buy ticket, <start station>, <end station>, <trip ID>, [<wagon number>, <seat/bed number>] - reserve a seat/bed in a specific wagon between a start station and an end station for a given route")
+			print("            for example, to buy a two tickets from A to B on trip 1, write 'buy ticket, A, B, 1, [1, 1], [2, 1]' for seats 1 in wagons 1 and 2")
 			print("my tickets - lists all future tickets for the logged in Customer")
 			print("=========================================")
 
@@ -121,8 +121,6 @@ def main():
 				routeID = temp[3]
 				print("All available tickets from " + startStation + " to " + endStation + " on route " + routeID + ": ")
 				
-			
-
 		elif userInput.startswith("buy ticket, "):
 			temp = userInput.split(", ")
 			if (len(temp) == 7):
