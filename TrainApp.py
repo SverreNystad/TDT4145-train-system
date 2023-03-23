@@ -2,7 +2,7 @@ from Station import printStations
 from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay, printAllTrainRoutesForTrip
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
-from inputHandler import convertStationName, inputSQLData
+from inputHandler import convertStationName, inputSQLData, isEnglishWeekDay, translateWeekDayToNorwegian
 
 trainLogo = '''
   _______     _______     _______     _______     ___       
@@ -75,6 +75,8 @@ def main():
 			if (len(temp) == 3):
 				weekday = temp[1]
 				correctedWeekday = weekday[0].upper() + weekday[1:].lower()
+				if (isEnglishWeekDay(correctedWeekday)):
+					correctedWeekday = translateWeekDayToNorwegian(correctedWeekday)
 				
 				station = temp[2]
 				correctedStationName = station[0].upper() + station[1:].lower()

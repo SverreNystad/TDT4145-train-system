@@ -2,7 +2,7 @@ import datetime
 import sqlite3
 
 from database_config import DATABASE_NAME
-from inputHandler import convertSpecialCharacters, previewWithSpecialCharacters;
+from inputHandler import convertSpecialCharacters, dayAfterTomorrow, previewWithSpecialCharacters, translateWeekDayToNorwegian;
 
 DATABASE: str = DATABASE_NAME
 
@@ -78,31 +78,6 @@ def nextDate(date: str) -> str:
 	next_day = datetime_next_day.strftime("%d.%m.%Y")
 	return next_day
 
-def translateWeekDayToNorwegian(weekday: str) -> str:
-	# Translate the weekday to norwegian
-	weekdays = {
-		"Monday": "Mandag",
-		"Tuesday": "Tirsdag",
-		"Wednesday": "Onsdag",
-		"Thursday": "Torsdag",
-		"Friday": "Fredag",
-		"Saturday": "Lørdag",
-		"Sunday": "Søndag"
-	}
-	return weekdays[weekday]
-
-def dayAfterTomorrow(day):
-	# Get the day after
-	weekdays =	{
-	"Mandag": "Tirsdag",
-	"Tirsdag": "Onsdag",
-	"Onsdag": "Torsdag",
-	"Torsdag": "Fredag",
-	"Fredag": "Lørdag",
-	"Lørdag": "Søndag",
-	"Søndag": "Mandag"
-	}
-	return weekdays[day]
 
 def getAllRouteDrivingOn(routeID: int, station: str, day: str, time: str) -> list:
 	RUTETIDER_ARRIVAL_INDEX = 3

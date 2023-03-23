@@ -42,6 +42,19 @@ def isEnglishWeekDay(weekday: str) -> bool:
 	weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 	return weekday in weekdays
 
+def translateWeekDayToEnglish(weekday: str) -> str:
+	# Translate the weekday to english
+	weekdays = {
+		"Mandag": "Monday",
+		"Tirsdag": "Tuesday",
+		"Onsdag": "Wednesday",
+		"Torsdag": "Thursday",
+		"Fredag": "Friday",
+		"Lørdag": "Saturday",
+		"Søndag": "Sunday"
+	}
+	return weekdays[weekday]
+
 def translateWeekDayToNorwegian(weekday: str) -> str:
 	# Translate the weekday to norwegian
 	weekdays = {
@@ -67,3 +80,4 @@ def dayAfterTomorrow(day):
 	"Søndag": "Mandag"
 	}
 	return weekdays[day]
+
