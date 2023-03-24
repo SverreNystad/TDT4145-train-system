@@ -162,7 +162,43 @@ def getAllTrainRoutesOnDay(stationName: str, weekDay: str) -> list:
 	return result
 
 
+def getTrainSetup(tripId: int) -> list:
+	"""
+	Will give a 2d list with each element filled with these values: 
+	[VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering]
+	"""
+
+	# Find VognOppsettID for tripId
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	cursor.execute("SELECT VognForekomst.VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering FROM VognOppsett, Togrute, Togtur NATURAL JOIN VognForekomst NATURAL JOIN Vogn WHERE VognOppsett.VognOppsettID = Togrute.VognOppsettID  AND Togrute.RuteID = Togtur.RuteID AND Togtur.TurID =:tripId", {
+	               "tripId": tripId})
+	vognOppsettData = cursor.fetchall()
+	connection.commit()
+	connection.close()
+	return vognOppsettData
+
 if __name__ == "__main__":
-	printAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00")
-	printAllTrainRoutesForTrip("Mosjøen", "Bodø", "21.03.2023", "07:00")
-	printAllTrainRoutesForTrip("Mo i Rana", "Mosjoeen", "21.03.2023", "07:00")
+	# print(getAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00"))
+
+	# print(findRoutesByTrip("Trondheim", "Fauske"))
+	# print(findRoutesByTrip("Mosjøen", "Trondheim"))
+
+	# print("Trondheim-" + "Bodø: " + str(findRoutesByTrip("Trondheim", "Bodoe")) + " should be  1, 2") 
+	# print("Bodø-" + "Mosjøen: " + str(findRoutesByTrip("Trondheim", "Mosjoeen")) + " should be  1, 2") 
+	# print("Mo i Rana-" + "Mosjøen: " + str(findRoutesByTrip("Mo i Rana", "Mosjoeen")) + " should be  3") 
+	# print("Bodø-" + "Trondheim: " + str(findRoutesByTrip("Bodoe", "Trondheim")) + " should be  0") 
+	# printAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00")
+	# printAllTrainRoutesForTrip("Mosjøen", "Bodø", "21.03.2023", "07:00")
+	# printAllTrainRoutesForTrip("Mo i Rana", "Mosjoeen", "21.03.2023", "07:00")
+
+	print(getTrainSetup(1))
+	print(getTrainSetup(2))
+	print(getTrainSetup(3))
+
+	print(getTrainSetup(4))
+	print(getTrainSetup(5))
+	print(getTrainSetup(6))
+
+	# convertDateToWeekDay("21.03.2023")
+	# print(sortRoutesByDayAndTime(getAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00")))
