@@ -18,33 +18,48 @@ def getOccupiedPlaces(tripId: int, startStation: str, endStation: str) -> list:
 	cursor = connection.cursor()
 	wagons = getTrainSetup(tripId)
 	stations = getStationsForTrip(tripId, startStation, endStation)
+	occupiedPlaces = []
 
 	for wagon in wagons:
 		wagonType = wagon[2]
 		wagonNumber = wagon[0]
 		if wagonType == "Sittevogn":
-			getOccupiedSeats(tripId, stations, wagonNumber)
+			occupiedSeats = getOccupiedSeats(tripId, stations, wagonNumber)
+			occupiedPlaces += occupiedSeats
 		if wagonType == "Sovevogn":
-			getOccupiedBeds(tripId, wagonNumber)
+			occupiedBeds = getOccupiedBeds(tripId, wagonNumber)
+			occupiedPlaces += occupiedBeds
 
 	occupiedPlaces = cursor.fetchall()
 	return occupiedPlaces
 
 def getOccupiedSeats(tripId: int, stations: list, wagonNumber: int) -> list:
-	
-	return
-
-def getOccupiedBeds(tripId: int, wagonNumber: int) -> list:
-
-	return
-
-def getTicketEndStation(tripId: int, ticketId: int) -> str:
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
 	cursor.execute("")
 	results = cursor.fetchall()
 	connection.close()
-	return results
+	return
+
+def getOccupiedCompartments(tripId: int, wagonNumber: int) -> list:
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	cursor.execute("")
+	results = cursor.fetchall()
+	connection.close()
+	return
+
+#done:)
+def getTicketEndStation(tripId: int, ticketId: int) -> str:
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	cursor.execute("""SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed
+						WHERE TurID = :tripId AND BillettID = :ticketId
+						GROUP BY BillettID""",
+	{"tripId": tripId, "ticketId": ticketId})
+	endStation = cursor.fetchall()
+	connection.close()
+	return endStation
 
 def buyTicket(tripId: int, wagonNr: int, groupNr: int, placeNr: int, customerId: int) -> None:
 	pass
@@ -60,4 +75,5 @@ def getSoldTickets(tripId: int, startStation: str, endStation: str) -> list:
 	pass
 
 if __name__ == "__main__":
-	print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
+	#print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
+	print(getTicketEndStation(1, 1))
