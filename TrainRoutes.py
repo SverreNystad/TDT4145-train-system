@@ -161,8 +161,18 @@ def getAllTrainRoutesOnDay(stationName: str, weekDay: str) -> list:
 	connection.close()
 	return result
 
-
 if __name__ == "__main__":
+	# print(getAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00"))
+
+	# print(findRoutesByTrip("Trondheim", "Fauske"))
+	# print(findRoutesByTrip("Mosjøen", "Trondheim"))
+
+	# print("Trondheim-" + "Bodø: " + str(findRoutesByTrip("Trondheim", "Bodoe")) + " should be  1, 2") 
+	# print("Bodø-" + "Mosjøen: " + str(findRoutesByTrip("Trondheim", "Mosjoeen")) + " should be  1, 2") 
+	# print("Mo i Rana-" + "Mosjøen: " + str(findRoutesByTrip("Mo i Rana", "Mosjoeen")) + " should be  3") 
+	# print("Bodø-" + "Trondheim: " + str(findRoutesByTrip("Bodoe", "Trondheim")) + " should be  0") 
 	printAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00")
 	printAllTrainRoutesForTrip("Mosjøen", "Bodø", "21.03.2023", "07:00")
 	printAllTrainRoutesForTrip("Mo i Rana", "Mosjoeen", "21.03.2023", "07:00")
+
+	# print(sortRoutesByDayAndTime(getAllTrainRoutesForTrip("Trondheim", "Bodø", "21.03.2023", "07:00")))
