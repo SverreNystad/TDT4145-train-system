@@ -10,16 +10,16 @@ ORDER_DATE_INDEX = 1
 
 def registerCustomerInfo():
 	customerName = inputSQLData("Enter customer name: ")
-	customerEpost = inputSQLData("Enter customer epost: ")
+	customerEmail = inputSQLData("Enter customer email: ")
 	customerPhone = inputSQLData("Enter customer phone: ")
-	if (canCreateCustomer(customerEpost, customerPhone)):
-		postCustomer(customerName, customerEpost, customerPhone)
+	if (canCreateCustomer(customerEmail, customerPhone)):
+		postCustomer(customerName, customerEmail, customerPhone)
 	else:
 		print("Customer already exists")
 
 
-def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> bool:
-    if (customerName == "" or customerEpost == "" or customerPhone == ""):
+def legalInput(customerName: str, customerEmail: str, customerPhone: str) -> bool:
+    if (customerName == "" or customerEmail == "" or customerPhone == ""):
         print("Illegal input due to: blank input")
         return False
     if all(not char.isalpha() and not char.isspace() for char in customerName):
@@ -28,47 +28,47 @@ def legalInput(customerName: str, customerEpost: str, customerPhone: str) -> boo
     if (customerPhone.isdigit() == False):
         print("Illegal input due to: Name must be alphabetic and phone number must be numeric")
         return False
-    if (customerEpost.find("@") == -1 or customerEpost.find(".") == -1):
-        print("Illegal input due to: Epost must contain @ and .")
+    if (customerEmail.find("@") == -1 or customerEmail.find(".") == -1):
+        print("Illegal input due to: Email must contain @ and .")
         return False
     if (len(customerPhone) < 8):
         print("Illegal input due to: Phone number must be at least 8 digits")
         return False
     return True
 
-def postCustomer(customerName: str, customerEpost: str, customerPhone: str) -> int:
-	if (legalInput(customerName, customerEpost, customerPhone) == False or canCreateCustomer(customerEpost, customerPhone) == False):
+def postCustomer(customerName: str, customerEmail: str, customerPhone: str) -> int:
+	if (legalInput(customerName, customerEmail, customerPhone) == False or canCreateCustomer(customerEmail, customerPhone) == False):
 		print("Registration failed!")
 		return
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEpost, customerPhone))
+	cursor.execute("INSERT INTO Kunde (Navn, Email, TlfNr) VALUES (?,?,?)", (customerName, customerEmail, customerPhone))
 	connection.commit()
 	connection.close()
 	print("Registration successful!")
-	return getCustomer(customerEpost)
+	return getCustomer(customerEmail)
 
-def canCreateCustomer(customerEpost: str, customerPhone: str) -> bool:
+def canCreateCustomer(customerEmail: str, customerPhone: str) -> bool:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM Kunde WHERE Epost =:customerEpost OR TlfNr =:customerPhone;", {"customerEpost": customerEpost, "customerPhone": customerPhone})
+	cursor.execute("SELECT * FROM Kunde WHERE Email =:customerEmail OR TlfNr =:customerPhone;", {"customerEmail": customerEmail, "customerPhone": customerPhone})
 	result = cursor.fetchall()
 	connection.close()
 	return len(result) == 0
 
 def login() -> int:
-	customerEpost = inputSQLData("Enter epost to login: ")
-	return getCustomer(customerEpost)
+	customerEmail = inputSQLData("Enter email to login: ")
+	return getCustomer(customerEmail)
 
-def getCustomer(customerEpost: str) -> int:
+def getCustomer(customerEmail: str) -> int:
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Epost =:customerEpost", {"customerEpost": customerEpost})
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Email =:customerEmail", {"customerEmail": customerEmail})
 	result = cursor.fetchone()
 	connection.close()
 	return result
@@ -154,8 +154,8 @@ def getCustomerNrByMailOrPhone(identificator: str) -> int:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	#Har vi check slik at epost må ha @ og tlf nr ikke kan ha @? Er bra å ha for denne spørringen
-	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Kunde.Epost=:id OR Kunde.TlfNr=:id", {"id": identificator})
+	#Har vi check slik at email må ha @ og tlf nr ikke kan ha @? Er bra å ha for denne spørringen
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Kunde.Email=:id OR Kunde.TlfNr=:id", {"id": identificator})
 	a=cursor.fetchone()
 	if a==None:
 		return -1
