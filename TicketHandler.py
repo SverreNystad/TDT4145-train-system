@@ -12,28 +12,34 @@ def getOccupiedPlaces(tripId: int, startStation: str, endStation: str) -> list:
 	wagons that are not available during the trip.
 	Returns [(VognNummer, PlassNummer)]
 	"""
-	# connect to database
-	connection = sqlite3.connect(DATABASE)
-	cursor = connection.cursor()
+	# get wagons for trip, including type and number
 	wagons = getTrainSetup(tripId)
+	print(wagons)
+	# get all stations between the start and end station for the trip, except the end station
 	stations = getStationsForTrip(tripId, startStation, endStation)
 	occupiedPlaces = []
 
 	for wagon in wagons:
-		print(wagon)
+		# get wagon type, number and places per group
 		wagonType = wagon[2]
 		wagonNumber = wagon[0]
+		placesPerGroup = wagon[4]
+		# call different methods based on wagon type
 		if wagonType == "Sittevogn":
 			occupiedSeats = getOccupiedSeats(tripId, stations, wagonNumber)
-			print("hello???" + str(occupiedSeats))
 			occupiedPlaces += occupiedSeats
-		if wagonType == "Sovevogn":
-			occupiedBeds = getOccupiedBeds(tripId, wagonNumber)
+		else:
+			occupiedBeds = getOccupiedBeds(tripId, wagonNumber, placesPerGroup)
 			occupiedPlaces += occupiedBeds
-	
 	return occupiedPlaces
 
+#donezo
 def getOccupiedSeats(tripId: int, stations: list, wagonNumber: int) -> list:
+	"""
+	Get all seats that are not available for a given trip and wagon number over certain stations.
+	Returns [(VognNummer, PlassNummer)]
+	"""
+	# connect to database
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
 
@@ -46,6 +52,7 @@ def getOccupiedSeats(tripId: int, stations: list, wagonNumber: int) -> list:
 		stations = f'"{stations[0][0]}"'
 		operator = "="
 	
+	# get info about overlapping tickets for this wagon except for end station of other tickets
 	occupiedSeats = cursor.execute(f"""SELECT VognNummer, PlassNummer FROM Billett AS B
 	WHERE EXISTS (SELECT * FROM BillettStopperVed AS BSV
 		WHERE B.TurID = BSV.TurID AND B.BillettID = BSV.BillettID AND
@@ -53,19 +60,37 @@ def getOccupiedSeats(tripId: int, stations: list, wagonNumber: int) -> list:
 				SELECT Stasjonsnavn FROM BillettStopperVed
 						WHERE TurID = B.TurID AND BillettID = B.BillettID
 						GROUP BY BillettID HAVING MAX(StasjonsNummer)) AND
-			B.VognNummer = {wagonNumber}
-		);""")
+			B.VognNummer = {wagonNumber});""")
+	
+	# fetch data and close connection
 	occupiedSeats = cursor.fetchall()
 	connection.close()
 	return occupiedSeats
 
-def getOccupiedCompartments(tripId: int, wagonNumber: int) -> list:
+#donedone!
+def getOccupiedBeds(tripId: int, wagonNumber: int, bedsPerGroup: int) -> list:
+	"""
+	Get all beds that are not available for a given trip and wagon number.
+	Returns [(VognNummer, PlassNummer)]
+	"""
+	# connect to database
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
-	cursor.execute("")
-	results = cursor.fetchall()
+
+	cursor.execute(f"""SELECT VognNummer, PlassNummer FROM Billett
+	WHERE VognNummer = {wagonNumber} AND TurID = {tripId}""")
+	occupiedBeds = cursor.fetchall()
 	connection.close()
-	return
+
+	# get all other beds in the compartment
+	allOccupiedBeds = []
+	
+	for bedTuple in occupiedBeds:
+		compartment = (bedTuple[1] + bedsPerGroup - 1) // bedsPerGroup
+		firstBed = (compartment * bedsPerGroup) - bedsPerGroup + 1
+		for bed in range(firstBed, compartment * bedsPerGroup + 1):
+			allOccupiedBeds.append((wagonNumber, bed))
+	return set(allOccupiedBeds)
 
 #done:) might not be needed though...
 def getTicketEndStation(tripId: int, ticketId: int) -> str:
