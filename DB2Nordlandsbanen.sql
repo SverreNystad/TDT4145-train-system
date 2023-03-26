@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS VognOppsett (
 
 CREATE TABLE IF NOT EXISTS Vogn (
 	VognNavn VARCHAR(255) NOT NULL, 
-	VognType VARCHAR(255) NOT NULL CHECK(VognType ='Sittevogn' OR VognType = 'Sovevogn'), --TODO  
+	VognType VARCHAR(255) NOT NULL CHECK(VognType ='Sittevogn' OR VognType = 'Sovevogn'),
 	AntallGrupperinger INTEGER NOT NULL, 
 	PlasserPerGruppering INTEGER NOT NULL, 
 	Operatoer VARCHAR(255) NOT NULL,

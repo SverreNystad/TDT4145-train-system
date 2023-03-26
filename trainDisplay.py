@@ -3,21 +3,19 @@ occupiedSign = "X"
 nonOccupiedSign = "O"
 
 def displayTrain(tripID: int, soldTickets: list):
-	# soldTickets = (plass nummer, vognnummer)
-	print("Displaying train for tour with id: " + str(tripID))
+	print("Displaying train for trip with id: " + str(tripID))
 	train = getTrainSetup(tripID)
-	# soldTickets = getSoldTickets(tripID, stoppID) # TODO: Must create method
 	for wagon in train:
 		displayWagon(soldTickets, wagon[0], wagon[1], wagon[2], wagon[3], wagon[4])
 
 
 def displayWagon(soldTickets: list, wagonNr: int, wagonName: str, wagonType: str, wagonGroups: int, placesPerGroup: int):
-	print("Wagon name: " + wagonName +" is the " + str(wagonNr) + "th in the train")
+	print("Wagon name: " + wagonName +" is wagon number " + str(wagonNr) + " in the train")
 
 	if (wagonType == "Sittevogn"):
-		displaySittingWagon(soldTickets, wagonNr, wagonGroups, placesPerGroup) # TODO: correct to wagonNummer
+		displaySittingWagon(soldTickets, wagonNr, wagonGroups, placesPerGroup)
 	elif (wagonType == "Sovevogn"):
-		displaySleepingWagon(soldTickets, wagonNr, wagonGroups, placesPerGroup) # TODO: correct to wagonNummer
+		displaySleepingWagon(soldTickets, wagonNr, wagonGroups, placesPerGroup)
 
 def displaySleepingWagon(soldTickets, wagonNr: int, rooms: int, bedPerRoom: int):
 	wallsSize = 2
@@ -31,7 +29,10 @@ def displaySleepingWagon(soldTickets, wagonNr: int, rooms: int, bedPerRoom: int)
 			if placeIsOccupied(soldTickets, wagonNr, bedPerRoom, bed, room):
 				bedOccupationSign = occupiedSign
 			bedPlacement = str(bed + (room-1)*bedPerRoom)
-			occupationAndPlacement = bedOccupationSign + " "*(maxRoomSize-len(bedPlacement)) + bedPlacement
+			if bedOccupationSign == occupiedSign:
+				occupationAndPlacement = bedOccupationSign + " "*(maxRoomSize-len(bedPlacement) + 1)
+			else:
+				occupationAndPlacement = bedOccupationSign + " "*(maxRoomSize-len(bedPlacement)) + bedPlacement
 			print("|" + "   |"  + occupationAndPlacement + "|")
 
 		if (room != rooms):
@@ -50,16 +51,17 @@ def displaySittingWagon(soldTickets, wagonNr: int, rows: int, seatsPerRow: int):
             seatOccupationSign = nonOccupiedSign
             if placeIsOccupied(soldTickets, wagonNr, seatsPerRow, seat, row):
                 seatOccupationSign = occupiedSign
-            print(seatOccupationSign + " "*(rows - len(seat_num)) + seat_num + " |", end="")
+        	if seatOccupationSign == occupiedSign:
+				print(seatOccupationSign + " "*(rows - len(seat_num) + ) + " |", end="")
+            else:
+				print(seatOccupationSign + " "*(rows - len(seat_num)) + seat_num + " |", end="")
         print()
     # Print the bottom border of the wagon
     print("+" + "-"*(seatsPerRow-1) + "-"*(rows+2)*(seatsPerRow) + "+")
 
 
 def placeIsOccupied(soldTickets: list, wagonNr: int, placeMentsPerGroup: int , placementInGroup: int, group: int):
-	# TODO: Check if the place is occupied
 	for ticket in soldTickets:
-		# ticket -> [wagon, placement]
 		if (ticket[0] == wagonNr and convertPlacementToGroupAndSeat(ticket[1], placeMentsPerGroup) == (group, placementInGroup) ):
 			return True
 	return False

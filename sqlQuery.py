@@ -76,7 +76,6 @@ def doQuery(query: str):
 	# except Exception as e:
 	# 	print(e)
 	#cursor.execute("DELETE FROM BillettStopperVed;")
-	# TODO: LEGG TIL AT KOMBO INNAD ER UNIK
 	#cursor.execute("SELECT * FROM BillettStopperVed;")
 	#cursor.execute("SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed WHERE TurID = :tripID AND BillettID = :ticketID GROUP BY BillettID", {"tripID": 1, "ticketID": 1})
 	#cursor.execute("SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed WHERE BillettID = :ticketID GROUP BY BillettID", {"ticketID": 1})
