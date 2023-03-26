@@ -1,3 +1,5 @@
+import datetime
+
 def isSQLInjection(userInput: str) -> bool:
 	# Check if the user input contains SQL injection
 	if (userInput.find(";") != -1):
@@ -81,3 +83,28 @@ def dayAfterTomorrow(day):
 	}
 	return weekdays[day]
 
+def convertDate(date: str) -> str:
+	"""
+	Convert the date from DD.MM.YYYY to YYYY-MM-DD
+	"""
+	day, month, year = date.split(".")
+	return year + "-" + month + "-" + day
+
+def previewDate(date: str) -> str:
+	"""
+	Convert the date from YYYY-MM-DD to DD.MM.YYYY
+	"""
+	year, month, day = date.split("-")
+	return day + "." + month + "." + year
+
+def nextDate(date: str):
+	"""
+	Get date after the given date
+	Input format: DD.MM.YYYY
+	return: DD.MM.YYYY
+	""" 
+	day, month, year = date.split(".")
+	datetime_object = datetime.datetime(int(year), int(month), int(day))
+	datetime_next_day = datetime_object + datetime.timedelta(days=1)
+	next_day = datetime_next_day.strftime("%d.%m.%Y")
+	return next_day
