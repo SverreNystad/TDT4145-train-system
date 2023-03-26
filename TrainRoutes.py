@@ -1,7 +1,7 @@
 import sqlite3
 
 from database_config import DATABASE_NAME
-from inputHandler import convertDateToWeekDay, convertSpecialCharacters, dayAfterTomorrow, nextDate, previewWithSpecialCharacters, translateWeekDayToNorwegian;
+from inputHandler import convertSpecialCharacters
 
 DATABASE: str = DATABASE_NAME
 

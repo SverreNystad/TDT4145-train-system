@@ -115,7 +115,7 @@ def main():
 				time = temp[2]
 				startStation = convertStationName(temp[3])
 				endStation = convertStationName(temp[4])
-				print("All train routes from " + startStation + " to " + endStation + " on " + date + ": ")
+				print("All train trips from " + startStation + " to " + endStation + " on " + date + ": ")
 				printAllTripsFor(getAllTripsFor(startStation, endStation, date, time))
 		
 		elif userInput.startswith("tickets, "):
