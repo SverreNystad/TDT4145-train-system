@@ -128,14 +128,14 @@ def main():
 		
 		elif userInput.startswith("buy tickets, "):
 			temp = userInput.split(", ")
-			if len(temp) != 5:
-				temp[4] = " ".join(temp[4:]).replace(" ", ",")
 			if (isLoggedIn):
 				tripID = temp[1]
 				startStation = convertStationName(temp[2])
 				endStation = convertStationName(temp[3])
-				tickets = temp[4]
+				tickets = eval(temp[4])
 				buyTickets(tripID, startStation, endStation, tickets, userID)
+			else:
+				print("Please log in to buy tickets.")
 		else:
 			print("Command not found. Type 'help' to see all commands")
 if __name__ == "__main__":

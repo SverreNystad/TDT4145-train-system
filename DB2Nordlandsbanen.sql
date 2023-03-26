@@ -1,3 +1,6 @@
+PRAGMA foreign_keys = ON;
+PRAGMA foreign_key_check;
+
 CREATE TABLE IF NOT EXISTS Stasjon (
 	Stasjonsnavn VARCHAR(255) NOT NULL,
 	Moh FLOAT(1) NOT NULL,
@@ -10,8 +13,8 @@ CREATE TABLE IF NOT EXISTS Delstrekning (
 	SporType VARCHAR(255) NOT NULL CHECK(SporType = 'Enkel' OR SporType = 'Dobbel'),
 	Lengde INTEGER NOT NULL CHECK(Lengde > 0),
 	PRIMARY KEY (StartStasjon, Endestasjon),
-	FOREIGN KEY (StartStasjon) REFERENCES Stasjon(StartStasjon) ON DELETE CASCADE ON UPDATE CASCADE,
-	FOREIGN KEY (Endestasjon) REFERENCES Stasjon(Endestasjon) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (StartStasjon) REFERENCES Stasjon(Stasjonsnavn) ON DELETE CASCADE ON UPDATE CASCADE,
+	FOREIGN KEY (Endestasjon) REFERENCES Stasjon(Stasjonsnavn) ON DELETE CASCADE ON UPDATE CASCADE,
 	CHECK (StartStasjon <> Endestasjon)
 );
 
@@ -136,7 +139,6 @@ CREATE TABLE IF NOT EXISTS BillettStopperVed (
 	StasjonsNummer INTEGER NOT NULL,
 	PRIMARY KEY(TurID, BillettID, Stasjonsnavn),
 	UNIQUE(TurID, BillettID, StasjonsNummer),
-	FOREIGN KEY(TurID) REFERENCES Togtur(TurID) ON DELETE RESTRICT ON UPDATE CASCADE,
-	FOREIGN KEY(BillettID) REFERENCES Billett(BillettID) ON DELETE RESTRICT ON UPDATE CASCADE,
+	FOREIGN KEY(TurID, BillettID) REFERENCES Billett(TurID, BillettID) ON DELETE RESTRICT ON UPDATE CASCADE,
 	FOREIGN KEY(Stasjonsnavn) REFERENCES Stasjon(Stasjonsnavn) ON DELETE RESTRICT ON UPDATE CASCADE
 );

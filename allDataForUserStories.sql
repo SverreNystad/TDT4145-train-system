@@ -1,4 +1,10 @@
+PRAGMA foreign_keys = ON;
+PRAGMA foreign_key_check;
+
 -- USERSSTORY A
+BEGIN;
+PRAGMA defer_foreign_keys = 1;
+
 INSERT INTO Stasjon (Stasjonsnavn, moh)
 VALUES 
 ('Bodoe', 4.1),
@@ -185,3 +191,5 @@ VALUES
 (4, '2023-04-04', 2),
 (5, '2023-04-03', 3),
 (6, '2023-04-04', 3);
+
+COMMIT;
