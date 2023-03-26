@@ -1,5 +1,6 @@
 from Station import printStations
 from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay, printAllTrainRoutesForTrip
+from TrainTrips import getAllTripsFor, printAllTripsFor
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
 from inputHandler import convertStationName, inputSQLData, isEnglishWeekDay, translateWeekDayToNorwegian
@@ -115,7 +116,7 @@ def main():
 				startStation = convertStationName(temp[3])
 				endStation = convertStationName(temp[4])
 				print("All train routes from " + startStation + " to " + endStation + " on " + date + ": ")
-				printAllTrainRoutesForTrip(startStation, endStation, date, time)
+				printAllTripsFor(getAllTripsFor(startStation, endStation, date, time))
 		
 		elif userInput.startswith("tickets, "):
 			temp = userInput.split(", ")
