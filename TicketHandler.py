@@ -141,9 +141,7 @@ def buyTickets(tripID: int, startStation: str, endStation: str, places: list, cu
 	cursor.execute(f"""INSERT INTO KundeOrdre (KjoepsTidspunkt, Kundenummer)
 	VALUES ('{purchaseTime}', '{customerID}')""")
 	# get newly created order number
-	orderNumber = cursor.execute(f"""SELECT OrdreNummer FROM KundeOrdre
-	WHERE KjoepsTidspunkt = '{purchaseTime}' AND KundeNummer = '{customerID}'""")
-	orderNumber = cursor.fetchall()[0][0]
+	orderNumber = cursor.lastrowid
 
 	# get next ticket ID for this trip
 	cursor.execute(f"""SELECT MAX(BillettID) FROM Billett
@@ -186,4 +184,4 @@ def canBuyTicket(tripID: int, startStation: str, endStation: str, wagonNumber: i
 if __name__ == "__main__":
 	#print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
 	#print(getOccupiedPlacesInWagon(1, "Mosjoeen", "Bodoe", 1))
-	buyTickets(1, "Mosjoeen", "Bodoe", [(1,1), (2,2)], 1)
+	buyTickets(1, "Mosjoeen", "Bodoe", [(1,6), (2,4)], 1)
