@@ -54,7 +54,7 @@ def canCreateCustomer(customerEmail: str, customerPhone: str) -> bool:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM Kunde WHERE Email =:customerEmail OR TlfNr =:customerPhone;", {"customerEmail": customerEmail, "customerPhone": customerPhone})
+	cursor.execute("SELECT * FROM Kunde WHERE Epost =:customerEmail OR TlfNr =:customerPhone;", {"customerEmail": customerEmail, "customerPhone": customerPhone})
 	result = cursor.fetchall()
 	connection.close()
 	return len(result) == 0
@@ -68,7 +68,7 @@ def getCustomer(customerEmail: str) -> int:
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Email =:customerEmail", {"customerEmail": customerEmail})
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Epost =:customerEmail", {"customerEmail": customerEmail})
 	result = cursor.fetchone()
 	connection.close()
 	return result
