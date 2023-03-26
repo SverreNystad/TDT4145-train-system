@@ -1,4 +1,4 @@
-from TrainRoutes import getTrainSetup;
+from TrainTrips import getTrainSetup;
 occupiedSign = "X"
 nonOccupiedSign = "O"
 
