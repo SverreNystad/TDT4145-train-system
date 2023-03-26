@@ -129,7 +129,7 @@ def getAllTrips(startStation: str, endStation: str, date: str, time: str):
     return allTrips
 
 
-def printAllTripsFor(allTrips: list):
+def printAllTrips(allTrips: list):
     """
     Will print all trips in a nice format.
     Expects input in following format:
