@@ -128,6 +128,7 @@ def main():
 				print("All available tickets from " + startStation + " to " + endStation + " on trip " + tripID + ": ")
 				displayTrain(tripID, getOccupiedPlaces(tripID, startStation, endStation))
 				
+		
 		elif userInput.startswith("buy tickets, "):
 			temp = userInput.split(", ")
 			if (isLoggedIn):
