@@ -132,8 +132,8 @@ def getDateOfTicket(tripID: str) -> datetime:
 
 def printTicket(ticket: list) -> None:
     startAndStopStations=getStartAndStopStation(ticket[0], ticket[1])
-    a=startAndStopStations
-    print("Ticket with id " + str(ticket[1]) + " for trip with id: " + str(ticket[0])+ " going from " + str(a[0]) + " to " + str(a[1]) + " the " + previewDate(str(getDateOfTicket(ticket[0]))) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]))
+    stations=startAndStopStations
+    print(f"Ticket for trip {ticket[0]} going from {stations[0]} to {stations[1]} the {previewDate(str(getDateOfTicket(ticket[0])))} with seat number {ticket[3]} and wagon number {ticket[4]}")
 
 def insertOrder():
     # Create a connection to the database

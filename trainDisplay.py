@@ -1,6 +1,6 @@
 from TrainTrips import getTrainSetup;
 occupiedSign = "X"
-nonOccupiedSign = "O"
+nonOccupiedSign = " "
 
 def displayTrain(tripID: int, soldTickets: list):
     print("Displaying train for trip with id: " + str(tripID))
@@ -30,7 +30,7 @@ def displaySleepingWagon(soldTickets, wagonNr: int, rooms: int, bedPerRoom: int)
                 bedOccupationSign = occupiedSign
             bedPlacement = str(bed + (room-1)*bedPerRoom)
             if bedOccupationSign == occupiedSign:
-                occupationAndPlacement = bedOccupationSign + " "*(maxRoomSize-len(bedPlacement) + 1)
+                occupationAndPlacement = " "*(maxRoomSize-len(bedPlacement) + 1) + bedOccupationSign
             else:
                 occupationAndPlacement = bedOccupationSign + " "*(maxRoomSize-len(bedPlacement)) + bedPlacement
             print("|" + "   |"  + occupationAndPlacement + "|")
@@ -52,7 +52,7 @@ def displaySittingWagon(soldTickets, wagonNr: int, rows: int, seatsPerRow: int):
             if placeIsOccupied(soldTickets, wagonNr, seatsPerRow, seat, row):
                 seatOccupationSign = occupiedSign
             if seatOccupationSign == occupiedSign:
-                print(seatOccupationSign + " "*(rows - len(seat_num) + ) + " |", end="")
+                print(" "*(rows - len(seat_num) + 1) + seatOccupationSign + " |", end="")
             else:
                 print(seatOccupationSign + " "*(rows - len(seat_num)) + seat_num + " |", end="")
         print()
