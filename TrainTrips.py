@@ -51,7 +51,7 @@ def getTrainSetup(tripID: int) -> list:
     connection.close()
     return trainSetup
 
-def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
+def getAllTrips(startStation: str, endStation: str, date: str, time: str):
     """
     Will return a 2d list with each element filled with these values:
     [(TurID, dato, RuteId, Retning, Stasjonsnavn, Ukedag, Ankomst, Avgang, StoppNr), ...]
