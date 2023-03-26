@@ -42,7 +42,7 @@ def main():
 			print("             for example, to see all trips on 01.01.2023 and 02.01.2023 after 00:00 on 01.01.2023 from station A to B, write 'train trips, 01.01.2023, 00:00, A, B'.")
 			print("register - registers as a Customer")
 			print("login - logs in as a Customer")
-			print("tickets, <trip ID>, <start< station>, <end station> - lists all available tickets between a start station and an end station for a given route")
+			print("tickets, <trip ID>, <start station>, <end station> - lists all available tickets between a start station and an end station for a given route")
 			print("         for example, to see all available tickets from station A to B on trip 1, write 'tickets, A, B, 1'")
 			if isLoggedIn:
 				print("buy tickets, <trip ID>, <start station>, <end station>, [(<wagon number> <seat/bed number>)] - reserve a seat/bed in a specific wagon between a start station and an end station for a given route")
@@ -121,11 +121,11 @@ def main():
 		
 		elif userInput.startswith("tickets, "):
 			temp = userInput.split(", ")
-			if (len(temp) == 5):
+			if (len(temp) == 4):
 				tripID = temp[1]
 				startStation = convertStationName(temp[2])
 				endStation = convertStationName(temp[3])
-				print("All available tickets from " + startStation + " to " + endStation + " on route " + routeID + ": ")
+				print("All available tickets from " + startStation + " to " + endStation + " on trip " + tripID + ": ")
 				displayTrain(tripID, getOccupiedPlaces(tripID, startStation, endStation))
 				
 		elif userInput.startswith("buy tickets, "):
