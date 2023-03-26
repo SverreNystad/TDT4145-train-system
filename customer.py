@@ -2,7 +2,7 @@ from datetime import datetime
 import sqlite3
 
 from database_config import DATABASE_NAME
-from inputHandler import inputSQLData;
+from inputHandler import inputSQLData, previewDate;
 
 DATABASE: str = DATABASE_NAME
 ORDERID_INDEX = 0
@@ -133,7 +133,7 @@ def getDateOfTicket(tripID: str) -> datetime:
 def printTicket(ticket: list) -> None:
 	startAndStopStations=getStartAndStopStation(ticket[0], ticket[1])
 	a=startAndStopStations
-	print("Ticket with id " + str(ticket[1]) + " for trip with id: " + str(ticket[0]) + " going the " + str(getDateOfTicket(ticket[0])) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]) + " Start: " + str(a[0]) + " Stop: " + str(a[1]))
+	print("Ticket with id " + str(ticket[1]) + " for trip with id: " + str(ticket[0])+ " going from " + str(a[0]) + " to " + str(a[1]) + " the " + previewDate(str(getDateOfTicket(ticket[0]))) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]))
 
 def insertOrder():
 	# Create a connection to the database
@@ -143,14 +143,15 @@ def insertOrder():
 	postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
 	cursor.execute("INSERT INTO KundeOrdre (Ordrenummer, KjoepsTidspunkt, Kundenummer) VALUES (1, '2023-5-1', 1)")
 	cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,1,1,2,2)")
+	cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,2,1,1,2)")
 	cursor.execute("SELECT * FROM KundeOrdre")
-	cursor.execute("INSERT INTO BillettStopperVed (TurID, BillettID, Stasjonsnavn, StasjonsNummer) VALUES (1,1,'Trondheim',1), (1,1,'Steinkjer',4), (1,1,'Mosjoeen',3), (1,2,'Bodoe',100)")
+	cursor.execute("INSERT INTO BillettStopperVed (TurID, BillettID, Stasjonsnavn, StasjonsNummer) VALUES (1,1,'Trondheim',1), (1,1,'Steinkjer',4), (1,1,'Mosjoeen',3), (1,2,'Trondheim',1), (1,2,'Bodoe',10)")
 	connection.commit()
 	connection.close()
 #insertOrder()
 
 def getStartAndStopStation(tripID, ticketID):
-	results=["",""]
+	results=["", ""]
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
@@ -167,8 +168,7 @@ if __name__ == "__main__":
 	#print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
 	#postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
 	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
-	insertOrder()
-	printFutureOrdersAndTickets("sverre.nystad@gmail.com")
+	printFutureOrdersAndTickets(1)
 	
 
 
