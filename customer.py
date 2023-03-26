@@ -8,12 +8,12 @@ DATABASE: str = DATABASE_NAME
 ORDERID_INDEX = 0
 ORDER_DATE_INDEX = 1
 
-def registerCustomerInfo():
+def registerCustomerInfo() -> int:
 	customerName = inputSQLData("Enter customer name: ")
 	customerEmail = inputSQLData("Enter customer email: ")
 	customerPhone = inputSQLData("Enter customer phone: ")
 	if (canCreateCustomer(customerEmail, customerPhone)):
-		postCustomer(customerName, customerEmail, customerPhone)
+		return postCustomer(customerName, customerEmail, customerPhone)
 	else:
 		print("Customer already exists")
 
