@@ -126,8 +126,6 @@ def main():
 				startStation = convertStationName(temp[2])
 				endStation = convertStationName(temp[3])
 				print("All available tickets from " + startStation + " to " + endStation + " on trip " + tripID + ": ")
-				displayTrain(tripID, getOccupiedPlaces(tripID, startStation, endStation))
-				
 		
 		elif userInput.startswith("buy tickets, "):
 			temp = userInput.split(", ")
