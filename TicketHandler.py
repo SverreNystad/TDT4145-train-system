@@ -14,7 +14,6 @@ def getOccupiedPlaces(tripId: int, startStation: str, endStation: str) -> list:
 	"""
 	# get wagons for trip, including type and number
 	wagons = getTrainSetup(tripId)
-	print(wagons)
 	# get all stations between the start and end station for the trip, except the end station
 	stations = getStationsForTrip(tripId, startStation, endStation)
 	occupiedPlaces = []
@@ -31,6 +30,35 @@ def getOccupiedPlaces(tripId: int, startStation: str, endStation: str) -> list:
 		else:
 			occupiedBeds = getOccupiedBeds(tripId, wagonNumber, placesPerGroup)
 			occupiedPlaces += occupiedBeds
+	return occupiedPlaces
+
+# donedone!
+def getOccupiedPlacesInWagon(tripId: int, startStation: str, endStation: str, wagonNumber: int) -> list:
+	"""
+	Using a trip, start station, end station, and wagonNumber, get all places (seats/beds)
+	in the given wagon that are not available during the trip.
+	Returns [(VognNummer, PlassNummer)]
+	"""
+	# get stations for trip
+	stations = getStationsForTrip(tripId, startStation, endStation)
+	# connnect to database
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	# get wagonType and placesPerGroup for this wagon
+	placesPerGroup = cursor.execute("""SELECT VognType, PlasserPerGruppering FROM Togtur NATURAL JOIN Togrute
+	NATURAL JOIN VognForekomst NATURAL JOIN Vogn WHERE TurID = :tripId AND VognNummer = :wagonNumber;
+	""", {"tripId": tripId, "wagonNumber": wagonNumber})
+	wagonInfo = cursor.fetchall()
+	wagonType = wagonInfo[0][0]
+	placesPerGroup = wagonInfo[0][1]
+
+	occupiedPlaces = []
+	if wagonType == "Sittevogn":
+		occupiedSeats = getOccupiedSeats(tripId, stations, wagonNumber)
+		occupiedPlaces += occupiedSeats
+	else:
+		occupiedBeds = getOccupiedBeds(tripId, wagonNumber, placesPerGroup)
+		occupiedPlaces += occupiedBeds
 	return occupiedPlaces
 
 #donezo
@@ -105,17 +133,13 @@ def getTicketEndStation(tripId: int, ticketId: int) -> str:
 	return endStation
 
 def buyTicket(tripId: int, wagonNr: int, groupNr: int, placeNr: int, customerId: int) -> None:
-	pass
+
+	return
 
 def canBuyTicket(tripId: int, wagonNr: int, groupNr: int, placeNr: int) -> bool:
-	pass
-
-def placeIsOccupied(tripId: int, wagonNr: int, groupNr: int, placeNr: int) -> bool:
-	pass
-
-def getSoldTickets(tripId: int, startStation: str, endStation: str) -> list:
-
-	pass
+	
+	return
 
 if __name__ == "__main__":
-	print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
+	#print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
+	print(getOccupiedPlacesInWagon(1, "Mosjoeen", "Bodoe", 1))
