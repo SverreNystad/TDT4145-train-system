@@ -134,7 +134,9 @@ def getDateOfTicket(tripID: str) -> datetime:
 	return datetime.strptime(date, "%Y-%m-%d")
 
 def printTicket(ticket: list) -> None:
-	print("Ticket with id " + str(ticket[1]) + " for trip with id: " + str(ticket[0]) + " going the " + str(getDateOfTicket(ticket[0])) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]))
+	startAndStopStations=getStartAndStopStation(ticket[0], ticket[1])
+	a=startAndStopStations
+	print("Ticket with id " + str(ticket[1]) + " for trip with id: " + str(ticket[0]) + " going the " + str(getDateOfTicket(ticket[0])) + " with seat number: " + str(ticket[3]) + " and wagon number: " + str(ticket[4]) + " Start: " + str(a[0]) + " Stop: " + str(a[1]))
 
 def insertOrder():
 	# Create a connection to the database
@@ -145,6 +147,7 @@ def insertOrder():
 	cursor.execute("INSERT INTO KundeOrdre (Ordrenummer, KjoepsTidspunkt, Kundenummer) VALUES (1, '2023-5-1', 1)")
 	cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,1,1,2,2)")
 	cursor.execute("SELECT * FROM KundeOrdre")
+	cursor.execute("INSERT INTO BillettStopperVed (TurID, BillettID, Stasjonsnavn, StasjonsNummer) VALUES (1,1,'Trondheim',1), (1,1,'Steinkjer',4), (1,1,'Mosjoeen',3), (1,2,'Bodoe',100)")
 	connection.commit()
 	connection.close()
 #insertOrder()
@@ -160,11 +163,28 @@ def getCustomerNrByMailOrPhone(identificator: str) -> int:
 	if a==None:
 		return -1
 	return a[0]
+
+def getStartAndStopStation(tripID, ticketID):
+	results=["",""]
+	# Create a connection to the database
+	connection = sqlite3.connect(DATABASE)
+	# Create a cursor to execute SQL commands
+	cursor = connection.cursor()
+	cursor.execute("SELECT Stasjonsnavn, StasjonsNummer FROM BillettStopperVed WHERE TurID =:TripID AND BillettID =:TicketID ORDER BY StasjonsNummer", {"TripID": tripID, "TicketID": ticketID})
+	a=cursor.fetchall()
+	results[0]=a[0][0]
+	results[1]=a[-1][0]
+	connection.close()
+	return results
+
+
 if __name__ == "__main__":
+	#print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+	#postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
 	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
-	# postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
-	# print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
+	insertOrder()
 	printFutureOrdersAndTickets("sverre.nystad@gmail.com")
+	
 
 
 
