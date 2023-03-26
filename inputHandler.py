@@ -103,7 +103,7 @@ def previewDate(date: str) -> str:
 	Convert the date from YYYY-MM-DD to DD.MM.YYYY
 	"""
 	year, month, day = date.split("-")
-	return day + "." + month + "." + year
+	return day[:2] + "." + month[:2] + "." + year[:4]
 
 def nextDate(date: str):
 	"""
@@ -116,3 +116,8 @@ def nextDate(date: str):
 	datetime_next_day = datetime_object + datetime.timedelta(days=1)
 	next_day = datetime_next_day.strftime("%d.%m.%Y")
 	return next_day
+
+if __name__ == "__main__":
+	print("This is a module, not a program")
+	print(previewDate("2020-12-31"))
+	print(previewDate("2020-12-31 00:00:00"))
