@@ -1,6 +1,5 @@
 import sqlite3
 
-
 DATABASE_NAME: str = 'Nordlandsbanen.db'
 
 def setup() -> None:
@@ -13,9 +12,7 @@ def setup() -> None:
     with open('allDataForUserStories.sql', 'r') as file:
         insertDataSql = file.read()
     
-    # Create a connection to the database
     connection = sqlite3.connect(DATABASE_NAME)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
     cursor.executescript(createTablesSql)
 
@@ -26,15 +23,12 @@ def setup() -> None:
     connection.close()
 
 def isEmpty() -> bool:
-    # Create a connection to the database
     connection = sqlite3.connect(DATABASE_NAME)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
     cursor.execute("SELECT * FROM Stasjon")
-    result = cursor.fetchall()
-    connection.commit()
+    stations = cursor.fetchall()
     connection.close()
-    return len(result) == 0
+    return len(stations) == 0
 
 if (__name__ == '__main__'):
     setup()

@@ -73,14 +73,3 @@ def convertPlacementToGroupAndSeat(placement: int, placesInGroups: int):
         seat = placesInGroups
         group -= 1
     return (group, seat)
-
-if __name__ == "__main__":
-    # displayWagon([(1,1), (1,3), (1, 5), (1,8), (1,16)], 1, "SJ-Sittevogn-1", "Sittevogn", 4, 4)
-    # displayWagon([(1,4)], 1, "SJ-Sittevogn-1", "Sittevogn", 4, 4)
-
-    # displayWagon([(2,1), (2,2), (2, 3), (2,4), (2,8)], 2, "SJ-Sovevogn-1", "Sovevogn", 4, 2)
-    # displayWagon([(1,5), (1,1), (1, 3), (1,8)], 3, "SJ-Sovevogn-2", "Sovevogn", 3, 1)
-
-    displayTrain(1, [(1,1), (1,3), (1, 5), (1,8), (1,16), (2,1), (2,2), (2, 3), (2,4), (2,8)])
-    displayTrain(2, [(1,1), (1,3), (1, 5), (1,8), (1,16), (2,1), (2,2), (2, 3), (2,4), (2,8)])
-    displayTrain(3, [(1,1), (1,3), (1, 5), (1,8), (1,16), (2,1), (2,2), (2, 3), (2,4), (2,8)])

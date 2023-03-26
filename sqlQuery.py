@@ -1,6 +1,5 @@
-
 from database_config import DATABASE_NAME
-from inputHandler import convertSpecialCharacters, dayAfterTomorrow, previewWithSpecialCharacters, translateWeekDayToNorwegian
+from inputHandler import convertSpecialCharacters, previewWithSpecialCharacters, translateWeekdayToNorwegian
 import sqlite3
 from datetime import datetime
 from TicketHandler import getTicketEndStation
@@ -19,7 +18,6 @@ def doQuery(query: str):
     else:
         stations = f'"{stations[0][0]}"'
         operator = "="
-    # connection.commit()
     #THIS MIGHT BE IT CHIEF
     cursor.execute(f"""SELECT VognNummer, PlassNummer FROM Billett AS B
     WHERE EXISTS (SELECT * FROM BillettStopperVed AS BSV

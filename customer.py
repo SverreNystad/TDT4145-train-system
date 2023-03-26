@@ -15,7 +15,7 @@ def registerCustomerInfo() -> int:
     if (canCreateCustomer(customerEmail, customerPhone)):
         return postCustomer(customerName, customerEmail, customerPhone)
     else:
-        print("Customer already exists")
+        print("Customer already exists.")
 
 
 def legalInput(customerName: str, customerEmail: str, customerPhone: str) -> bool:
@@ -23,10 +23,10 @@ def legalInput(customerName: str, customerEmail: str, customerPhone: str) -> boo
         print("Illegal input due to: blank input")
         return False
     if all(not char.isalpha() and not char.isspace() for char in customerName):
-        print("Illegal input due to: Name must be alphabetic or space")
+        print("Illegal input due to: Name must only contain letters or spaces")
         return False
     if (customerPhone.isdigit() == False):
-        print("Illegal input due to: Name must be alphabetic and phone number must be numeric")
+        print("Illegal input due to: Phone number must only contain numbers")
         return False
     if (customerEmail.find("@") == -1 or customerEmail.find(".") == -1):
         print("Illegal input due to: Email must contain @ and .")
@@ -40,9 +40,8 @@ def postCustomer(customerName: str, customerEmail: str, customerPhone: str) -> i
     if (legalInput(customerName, customerEmail, customerPhone) == False or canCreateCustomer(customerEmail, customerPhone) == False):
         print("Registration failed!")
         return
-    # Create a connection to the database
+    
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
     cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEmail, customerPhone))
     connection.commit()
@@ -51,125 +50,94 @@ def postCustomer(customerName: str, customerEmail: str, customerPhone: str) -> i
     return getCustomer(customerEmail)
 
 def canCreateCustomer(customerEmail: str, customerPhone: str) -> bool:
+    """
+    Checks if a customer with the given email or phone number already exists.
+    """
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM Kunde WHERE Epost =:customerEmail OR TlfNr =:customerPhone;", {"customerEmail": customerEmail, "customerPhone": customerPhone})
-    result = cursor.fetchall()
+    cursor.execute("""SELECT * FROM Kunde
+    WHERE Epost =:customerEmail OR TlfNr =:customerPhone;""",
+    {"customerEmail": customerEmail, "customerPhone": customerPhone})
+    customerExists = cursor.fetchall()
     connection.close()
-    return len(result) == 0
+    return len(customerExists) == 0
 
 def login() -> int:
     customerEmail = inputSQLData("Enter email to login: ")
     return getCustomer(customerEmail)
 
 def getCustomer(customerEmail: str) -> int:
-    # Create a connection to the database
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
-    cursor.execute("SELECT Kundenummer FROM Kunde WHERE Epost =:customerEmail", {"customerEmail": customerEmail})
-    result = cursor.fetchone()
+    cursor.execute("""SELECT Kundenummer FROM Kunde
+    WHERE Epost =:customerEmail""",
+    {"customerEmail": customerEmail})
+    customer = cursor.fetchone()
     connection.close()
-    return result
-
+    return customer
 
 def printFutureOrdersAndTickets(CustomerID) -> None:
     # Get all orders
-    history: list = getCustomerHistory(CustomerID)
+    history: list = getCustomerOrderHistory(CustomerID)
     orderToTicket: dict = {}
 
     for order in history:
-        orderToTicket[order] = getCustomerTicketBy(order[ORDERID_INDEX])
-
+        orderToTicket[order] = getCustomerTicketByOrder(order[ORDERID_INDEX])
 
     for order in orderToTicket:
         tickets: list = orderToTicket[order]
         futureTickets: list = []
 
-        # Check for each ticket that it is in the ticket is in the future
+        # Check each ticket that it is in the future
         for ticket in tickets:
-            if (getDateOfTicket(ticket[ORDER_DATE_INDEX]) > datetime.now()): #I do not know if it is possible to compare a datetime object with a string
+            if (getDateOfTicket(ticket[ORDER_DATE_INDEX]) > datetime.now()):
                 futureTickets.append(ticket)
         print("Ordernumber: " + str(order[ORDERID_INDEX]) + ", Order date: " + str(order[ORDER_DATE_INDEX]))
 
         for futureTicket in futureTickets:
             printTicket(futureTicket)
+        
+        print()
 
-def getCustomerHistory(CustomerID: str) -> list:
-    # Create a connection to the database
+def getCustomerOrderHistory(CustomerID: str) -> list:
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM KundeOrdre WHERE Kundenummer =:CustomerID", {"CustomerID": CustomerID})
-    result = cursor.fetchall()
-    connection.commit()
+    cursor.execute("""SELECT * FROM KundeOrdre
+    WHERE Kundenummer =:CustomerID""",
+    {"CustomerID": CustomerID})
+    allOrders = cursor.fetchall()
     connection.close()
-    return result
+    return allOrders
 
-def getCustomerTicketBy(CustomerOrderID: str) -> list:
-    # Create a connection to the database
+def getCustomerTicketByOrder(CustomerOrderID: str) -> list:
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
-    cursor.execute("SELECT * FROM Billett WHERE OrdreNummer =:CustomerOrderID", {"CustomerOrderID": CustomerOrderID})
-    result = cursor.fetchall()
-    connection.commit()
+    cursor.execute("""SELECT * FROM Billett
+    WHERE OrdreNummer =:CustomerOrderID""", {"CustomerOrderID": CustomerOrderID})
+    allTickets = cursor.fetchall()
     connection.close()
-    return result
+    return allTickets
 
 def getDateOfTicket(tripID: str) -> datetime:
-    # Create a connection to the database
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
-    cursor.execute("SELECT TurDato FROM Togtur WHERE TurID =:tripID", {"tripID": tripID})
-    result = cursor.fetchone()
-    connection.commit()
+    cursor.execute("""SELECT TurDato FROM Togtur
+    WHERE TurID =:tripID""", {"tripID": tripID})
+    ticketDate = cursor.fetchone()
     connection.close()
-    date: str = result[0]
+    date: str = ticketDate[0]
     return datetime.strptime(date, "%Y-%m-%d")
 
 def printTicket(ticket: list) -> None:
-    startAndStopStations=getStartAndStopStation(ticket[0], ticket[1])
-    stations=startAndStopStations
-    print(f"Ticket for trip {ticket[0]} going from {stations[0]} to {stations[1]} the {previewDate(str(getDateOfTicket(ticket[0])))} with seat number {ticket[3]} and wagon number {ticket[4]}")
-
-def insertOrder():
-    # Create a connection to the database
-    connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
-    cursor = connection.cursor()
-    postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
-    cursor.execute("INSERT INTO KundeOrdre (Ordrenummer, KjoepsTidspunkt, Kundenummer) VALUES (1, '2023-5-1', 1)")
-    cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,1,1,2,2)")
-    cursor.execute("INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer) VALUES (1,2,1,1,2)")
-    cursor.execute("SELECT * FROM KundeOrdre")
-    cursor.execute("INSERT INTO BillettStopperVed (TurID, BillettID, Stasjonsnavn, StasjonsNummer) VALUES (1,1,'Trondheim',1), (1,1,'Steinkjer',4), (1,1,'Mosjoeen',3), (1,2,'Trondheim',1), (1,2,'Bodoe',10)")
-    connection.commit()
-    connection.close()
-#insertOrder()
+    startStation, endStation = getStartAndStopStation(ticket[0], ticket[1])
+    print(f"Ticket for trip {ticket[0]} going from {startStation} to {endStation} the {previewDate(str(getDateOfTicket(ticket[0])))} with seat number {ticket[3]} and wagon number {ticket[4]}")
 
 def getStartAndStopStation(tripID, ticketID):
-    results=["", ""]
-    # Create a connection to the database
     connection = sqlite3.connect(DATABASE)
-    # Create a cursor to execute SQL commands
     cursor = connection.cursor()
-    cursor.execute("SELECT Stasjonsnavn, StasjonsNummer FROM BillettStopperVed WHERE TurID =:TripID AND BillettID =:TicketID ORDER BY StasjonsNummer", {"TripID": tripID, "TicketID": ticketID})
-    a=cursor.fetchall()
-    results[0]=a[0][0]
-    results[1]=a[-1][0]
+    cursor.execute("""SELECT Stasjonsnavn FROM BillettStopperVed
+    WHERE TurID =:TripID AND BillettID =:TicketID
+    ORDER BY StasjonsNummer""", {"TripID": tripID, "TicketID": ticketID})
+    stations = cursor.fetchall()
     connection.close()
-    return results
-
-
-if __name__ == "__main__":
-    #print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
-    #postCustomer("Sverre", "sverre.nystad@gmail.com", "12345678")
-    # print(canCreateCustomer("sverre.nystad@gmail.com", "12345678"))
-    printFutureOrdersAndTickets(1)
-    
-
-
-
+    return stations[0][0], stations[-1][0]

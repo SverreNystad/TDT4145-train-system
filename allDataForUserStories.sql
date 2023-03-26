@@ -1,7 +1,7 @@
 PRAGMA foreign_keys = ON;
 PRAGMA foreign_key_check;
 
--- USERSSTORY A
+-- USERSTORY A
 BEGIN;
 PRAGMA defer_foreign_keys = 1;
 
@@ -34,7 +34,7 @@ VALUES
 ('Nordlandsbanen', 'Fauske', 4),
 ('Nordlandsbanen', 'Bodoe', 5);
 
--- USERSSTORY B
+-- USERSTORY B
 INSERT INTO Togrute (RuteID, BaneRetning, VognOppsettID)
 VALUES
 (1, 'Med', 1),
@@ -182,7 +182,7 @@ VALUES
 (2, 2, 'SJ-Sovevogn-1'),
 (3, 1, 'SJ-Sittevogn-1');
 
--- USERSSTORY F
+-- USERSTORY F
 INSERT INTO Togtur (TurID, TurDato, RuteID)
 VALUES 
 (1, '2023-04-03', 1),

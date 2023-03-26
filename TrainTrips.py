@@ -1,7 +1,7 @@
 import sqlite3
 
 from database_config import DATABASE_NAME
-from inputHandler import convertDate, convertDateToWeekDay, convertSpecialCharacters, nextDate, previewDate, previewWithSpecialCharacters, translateWeekDayToNorwegian;
+from inputHandler import convertDate, convertDateToWeekday, convertSpecialCharacters, nextDate, previewDate, previewWithSpecialCharacters, translateWeekdayToNorwegian;
 
 DATABASE: str = DATABASE_NAME
 
@@ -15,15 +15,18 @@ def getStationsForTrip(tripID: int, startStation: str, endStation: str) -> list:
     cursor.execute("""SELECT Stasjonsnavn FROM Rutestopp
     WHERE StoppNr BETWEEN
         (SELECT StoppNr AS startStopp FROM Rutestopp
-            WHERE Stasjonsnavn = :startStation AND RuteID =
-                (SELECT RuteID FROM Togtur WHERE TurID = :tripID)) AND
-        (SELECT StoppNr AS endeStopp FROM Rutestopp
-            WHERE Stasjonsnavn = :endStation AND RuteID =
-                (SELECT RuteID FROM Togtur WHERE TurID = :tripID)) - 1
-        AND RuteID =
-            (SELECT RuteID FROM Togtur WHERE TurID = :tripID)
-        ORDER BY StoppNr""",
-            {"tripID": tripID, "startStation": startStation, "endStation": endStation})
+        WHERE Stasjonsnavn = :startStation
+            AND RuteID =
+                (SELECT RuteID FROM Togtur WHERE TurID = :tripID))
+        AND (SELECT StoppNr AS endeStopp FROM Rutestopp
+        WHERE Stasjonsnavn = :endStation
+            AND RuteID =
+                (SELECT RuteID FROM Togtur
+                WHERE TurID = :tripID)) - 1
+        AND RuteID = (SELECT RuteID FROM Togtur
+        WHERE TurID = :tripID)
+    ORDER BY StoppNr;""",
+    {"tripID": tripID, "startStation": startStation, "endStation": endStation})
     stations = cursor.fetchall()
     connection.close()
     return stations
@@ -42,12 +45,11 @@ def getTrainSetup(tripID: int) -> list:
         WHERE VognOppsett.VognOppsettID = Togrute.VognOppsettID  
             AND Togrute.RuteID = Togtur.RuteID 
             AND Togtur.TurID =:tripID
-        Order by VognForekomst.VognNummer;
-        """, {"tripID": tripID})
-    TrainSetup = cursor.fetchall()
-    connection.commit()
+        ORDER BY VognForekomst.VognNummer;""",
+        {"tripID": tripID})
+    trainSetup = cursor.fetchall()
     connection.close()
-    return TrainSetup
+    return trainSetup
 
 def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
     """
@@ -60,8 +62,8 @@ def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
     endStation = convertSpecialCharacters(endStation)
     
     # Get date and day
-    day = convertDateToWeekDay(date)
-    dayAfter = convertDateToWeekDay(nextDate(date))
+    day = convertDateToWeekday(date)
+    dayAfter = convertDateToWeekday(nextDate(date))
     dateAfter = convertDate(nextDate(date))
     date = convertDate(date)
 
@@ -75,13 +77,11 @@ def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
         NATURAL JOIN Rutetider AS RT
         NATURAL JOIN Rutestopp AS RS
         WHERE (TR.RuteID IN (
-            SELECT DISTINCT rs1.RuteID
-            FROM Rutestopp rs1
+            SELECT DISTINCT rs1.RuteID FROM Rutestopp rs1
             JOIN Rutestopp rs2 ON rs1.RuteID = rs2.RuteID
             WHERE rs1.Stasjonsnavn =:START_STATION
                 AND rs2.Stasjonsnavn =:END_STATION
-                AND rs1.StoppNr < rs2.StoppNr
-            )
+                AND rs1.StoppNr < rs2.StoppNr)
             AND (RS.Stasjonsnavn =:START_STATION OR RS.Stasjonsnavn =:END_STATION)
             AND (
                     (
@@ -125,7 +125,6 @@ def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
         """, {"START_STATION": startStation, "END_STATION": endStation, "TIME_OF_TRAVEL": time, "DATE": date, "DATE_AFTER": dateAfter, "DAY": day, "DAY_AFTER": dayAfter}
     )
     allTrips = cursor.fetchall()
-    connection.commit()
     connection.close()
     return allTrips
 
@@ -152,36 +151,3 @@ def printAllTripsFor(allTrips: list):
         start: str = f"Trip {str(startOfTrip[0])} following route {str(startOfTrip[2])} departs from {startStation} at {startOfTrip[5]}, {previewDate(startOfTrip[1])} {startOfTrip[7]}"
         end: str = f" arrives at {endStation} at {endOfTrip[6]}."
         print(start + ", and" + end)
-
-
-if __name__ == "__main__":
-    print("Test getStationsForTrip(): ")
-    # Correct order
-    print(getStationsForTrip(1, "Trondheim", "Bodoe"))
-    # wrong order
-    print(getStationsForTrip(1, "Bodoe", "Trondheim"))
-    
-    print(getStationsForTrip(2, "Trondheim", "Bodoe"))
-    print(getStationsForTrip(3, "Trondheim", "Bodoe"))
-    print(getStationsForTrip(4, "Trondheim", "Bodoe"))
-    print(getStationsForTrip(5, "Trondheim", "Bodoe"))
-    print(getStationsForTrip(6, "Trondheim", "Bodoe"))
-    print("=====================================")
-    print("Test getTrainSetup(): ")
-    print(getTrainSetup(1))
-    print(getTrainSetup(2))
-    print(getTrainSetup(3))
-    print("=====================================")
-    
-    
-    # print(getStationsForTripBetweenStations(1, "Steinkjer", "Bodoe"))
-    # print(getAllTripsFor("Steinkjer", "Bodoe", "2020-11-23", "12:00"))
-    # print(getAllTripsFor("Trondheim", "Bodoe", "03.04.2023", "12:00"))'
-    # print(getAllTripsFor("Steinkjer", "Trondheim", "03.04.2023", "00:00"))
-    printAllTripsFor(getAllTripsFor("Trondheim", "Bodø", "03.04.2023", "00:00"))
-    print("=====================================")
-    printAllTripsFor(getAllTripsFor("Steinkjer", "Trondheim", "03.04.2023", "00:00"))
-    
-    print()
-    
-    

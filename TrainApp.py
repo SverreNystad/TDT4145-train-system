@@ -3,7 +3,7 @@ from TrainRoutes import getAllTrainRoutesOnDay
 from TrainTrips import getAllTripsFor, printAllTripsFor
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
-from inputHandler import convertStationName, inputSQLData, isEnglishWeekDay, translateWeekDayToNorwegian
+from inputHandler import convertStationName, inputSQLData, isEnglishWeekday, translateWeekdayToNorwegian
 from TicketHandler import buyTickets, getOccupiedPlaces
 from trainDisplay import displayTrain
 
@@ -87,8 +87,8 @@ def main():
             if (len(temp) == 3):
                 weekday = temp[1]
                 correctedWeekday = weekday[0].upper() + weekday[1:].lower()
-                if (isEnglishWeekDay(correctedWeekday)):
-                    correctedWeekday = translateWeekDayToNorwegian(correctedWeekday)
+                if (isEnglishWeekday(correctedWeekday)):
+                    correctedWeekday = translateWeekdayToNorwegian(correctedWeekday)
                 
                 station = temp[2]
                 correctedStationName = station[0].upper() + station[1:].lower()
@@ -125,9 +125,13 @@ def main():
                 tripID = temp[1]
                 startStation = convertStationName(temp[2])
                 endStation = convertStationName(temp[3])
-                print("All available tickets from " + startStation + " to " + endStation + " on trip " + tripID + ": ")
-                print("Unavailable tickets are marked with X's. To buy a ticket for a seat/bed, use the seat/bed number.\n")
-                displayTrain(tripID, getOccupiedPlaces(tripID, startStation, endStation))
+                occupiedPlaces = getOccupiedPlaces(tripID, startStation, endStation)
+                if occupiedPlaces == ["Invalid"]:
+                    print("Invalid stations for this trip. Please enter other start and end stations.")
+                else:
+                    print("All available tickets from " + startStation + " to " + endStation + " on trip " + tripID + ": ")
+                    print("Unavailable tickets are marked with X's. To buy a ticket for a seat/bed, use the seat/bed number.\n")
+                    displayTrain(tripID, occupiedPlaces)
 
         elif userInput.startswith("buy tickets, "):
             temp = userInput.split(", ")
@@ -141,5 +145,6 @@ def main():
                 print("Please log in to buy tickets.")
         else:
             print("Command not found. Type 'help' to see all commands")
+
 if __name__ == "__main__":
     main()

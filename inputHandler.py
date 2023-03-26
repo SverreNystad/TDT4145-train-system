@@ -1,7 +1,7 @@
 import datetime
 
 def isSQLInjection(userInput: str) -> bool:
-    # Check if the user input contains SQL injection
+    # Check if the user input contains SQL injections
     if (userInput.find(";") != -1):
         return True
     if (userInput.find("--") != -1):
@@ -12,8 +12,12 @@ def isSQLInjection(userInput: str) -> bool:
         return True
     if (userInput.find("/*") != -1):
         return True
+    return False
 
 def inputSQLData(message: str) -> str:
+    """
+    Get input from the user and check if it contains SQL injections
+    """
     userInput: str = input(message)
     if isSQLInjection(userInput):
         print("Possible SQL Injection detected")
@@ -41,17 +45,19 @@ def previewWithSpecialCharacters(userInput: str) -> str:
     return userInput
 
 def convertStationName(stationName: str) -> str:
-    # Convert the station name to a format that can be used in SQL
+    """
+    Convert the station name to a format that can be used in SQL
+    """
     stations: list = stationName.split(" ")
     convertedStationName: str = ' '.join([convertSpecialCharacters(station[0].upper() + station[1:].lower()) for station in stations])
     return convertedStationName
 
-def isEnglishWeekDay(weekday: str) -> bool:
+def isEnglishWeekday(weekday: str) -> bool:
     # Check if the weekday is in english
     weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     return weekday in weekdays
 
-def translateWeekDayToEnglish(weekday: str) -> str:
+def translateWeekdayToEnglish(weekday: str) -> str:
     # Translate the weekday to english
     weekdays = {
         "Mandag": "Monday",
@@ -64,7 +70,7 @@ def translateWeekDayToEnglish(weekday: str) -> str:
     }
     return weekdays[weekday]
 
-def translateWeekDayToNorwegian(weekday: str) -> str:
+def translateWeekdayToNorwegian(weekday: str) -> str:
     # Translate the weekday to norwegian
     weekdays = {
         "Monday": "Mandag",
@@ -77,19 +83,6 @@ def translateWeekDayToNorwegian(weekday: str) -> str:
     }
     return weekdays[weekday]
 
-def dayAfterTomorrow(day):
-    # Get the day after
-    weekdays =    {
-    "Mandag": "Tirsdag",
-    "Tirsdag": "Onsdag",
-    "Onsdag": "Torsdag",
-    "Torsdag": "Fredag",
-    "Fredag": "Lørdag",
-    "Lørdag": "Søndag",
-    "Søndag": "Mandag"
-    }
-    return weekdays[day]
-
 def convertDate(date: str) -> str:
     """
     Convert the date from DD.MM.YYYY to YYYY-MM-DD
@@ -97,13 +90,15 @@ def convertDate(date: str) -> str:
     day, month, year = date.split(".")
     return year + "-" + month + "-" + day
 
-def convertDateToWeekDay(date: str) -> str:
-    # Convert the date to a weekday
-    # DD.MM.YYYY -> Monday
+def convertDateToWeekday(date: str) -> str:
+    """
+    Convert the date to a weekday
+    DD.MM.YYYY -> weekday
+    """
     day, month, year = date.split(".")
     datetime_object = datetime.datetime(int(year), int(month), int(day))
     weekday = datetime_object.strftime("%A")
-    return translateWeekDayToNorwegian(weekday)
+    return translateWeekdayToNorwegian(weekday)
 
 def previewDate(date: str) -> str:
     """
@@ -123,12 +118,3 @@ def nextDate(date: str):
     datetime_next_day = datetime_object + datetime.timedelta(days=1)
     next_day = datetime_next_day.strftime("%d.%m.%Y")
     return next_day
-
-if __name__ == "__main__":
-    print("This is a module, not a program")
-    print(previewDate("2020-12-31"))
-    print(previewDate("2020-12-31 00:00:00"))
-    print("Testing convertStationName")
-    print(convertStationName("Østfoldbanen"))
-    print(convertStationName("Bodø"))
-    print(convertStationName("Mo i rana"))
