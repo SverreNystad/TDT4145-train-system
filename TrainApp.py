@@ -126,7 +126,6 @@ def main():
 				endStation = convertStationName(temp[3])
 				print("All available tickets from " + startStation + " to " + endStation + " on route " + routeID + ": ")
 		
-		# TODO: support for more tickets
 		elif userInput.startswith("buy tickets, "):
 			temp = userInput.split(", ")
 			if len(temp) != 5:
@@ -136,10 +135,7 @@ def main():
 				startStation = convertStationName(temp[2])
 				endStation = convertStationName(temp[3])
 				tickets = temp[4]
-				
-				#buyTickets(tripID, startStation, endStation, tickets, userID)
-
-				print("Buying ticket from " + startStation + " to " + endStation + " on trip " + tripID + " in wagon " + wagonNumber + " seat " + seatNumber + " for Customer with ID: " + str(userID))
+				buyTickets(tripID, startStation, endStation, tickets, userID)
 		else:
 			print("Command not found. Type 'help' to see all commands")
 if __name__ == "__main__":

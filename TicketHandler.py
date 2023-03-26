@@ -175,6 +175,8 @@ def buyTickets(tripID: int, startStation: str, endStation: str, places: list, cu
 
 	connection.commit()
 
+	print("Thank you for your purchase! Have a nice day :)")
+
 def canBuyTicket(tripID: int, startStation: str, endStation: str, wagonNumber: int, placeNumber: int) -> bool:
 	occupiedPlaces = getOccupiedPlacesInWagon(tripID, startStation, endStation, wagonNumber)
 	if (wagonNumber, placeNumber) in occupiedPlaces:
