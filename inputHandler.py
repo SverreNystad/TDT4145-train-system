@@ -90,6 +90,14 @@ def convertDate(date: str) -> str:
 	day, month, year = date.split(".")
 	return year + "-" + month + "-" + day
 
+def convertDateToWeekDay(date: str) -> str:
+	# Convert the date to a weekday
+	# DD.MM.YYYY -> Monday
+	day, month, year = date.split(".")
+	datetime_object = datetime.datetime(int(year), int(month), int(day))
+	weekday = datetime_object.strftime("%A")
+	return translateWeekDayToNorwegian(weekday)
+
 def previewDate(date: str) -> str:
 	"""
 	Convert the date from YYYY-MM-DD to DD.MM.YYYY

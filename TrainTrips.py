@@ -1,9 +1,9 @@
 import datetime
 import sqlite3
-from TrainRoutes import convertDateToWeekDay, findRoutesDrivingBetween
+from TrainRoutes import findRoutesDrivingBetween
 
 from database_config import DATABASE_NAME
-from inputHandler import convertDate, convertSpecialCharacters, dayAfterTomorrow, nextDate, previewDate, previewWithSpecialCharacters, translateWeekDayToNorwegian;
+from inputHandler import convertDate, convertDateToWeekDay, convertSpecialCharacters, nextDate, previewDate, previewWithSpecialCharacters, translateWeekDayToNorwegian;
 
 DATABASE: str = DATABASE_NAME
 
@@ -30,8 +30,8 @@ def getStationsForTrip(tripID: int, startStation: str, endStation: str) -> list:
 
 def getTrainSetup(tripID: int) -> list:
 	"""
-	Will give a 2d list with each element filled with these values: 
-	[VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering]
+	Will return a 2d list with each element filled with these values: 
+	[(VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering), ...]
 	"""
 
 	# Find VognOppsettID for tripID
@@ -46,8 +46,8 @@ def getTrainSetup(tripID: int) -> list:
 
 def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
 	"""
-	Will give a 2d list with each element filled with these values:
-	return [(TurID, dato, RuteId, Retning, Stasjonsnavn, Ukedag, Ankomst, Avgang, StoppNr), ...]
+	Will return a 2d list with each element filled with these values:
+	[(TurID, dato, RuteId, Retning, Stasjonsnavn, Ukedag, Ankomst, Avgang, StoppNr), ...]
 	"""
 
 	# Sanitize input
@@ -60,7 +60,6 @@ def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
 	dateAfter = convertDate(nextDate(date))
 	date = convertDate(date)
 
-	routes: list = findRoutesDrivingBetween(startStation, endStation)
 	#Create connection to database
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
@@ -77,7 +76,7 @@ def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
 		WHERE rs1.Stasjonsnavn =:START_STATION
 			AND rs2.Stasjonsnavn =:END_STATION
 			AND rs1.StoppNr < rs2.StoppNr
-	)
+		)
 		AND (RS.Stasjonsnavn =:START_STATION OR RS.Stasjonsnavn =:END_STATION)
 		AND (
 				(
@@ -118,15 +117,7 @@ def getAllTripsFor(startStation: str, endStation: str, date: str, time: str):
 			WHEN RS.Stasjonsnavn =:END_STATION THEN 2
 		END ASC,
 		RT.Avgang ASC
-	""", {
-		"ROUTES": routes,
-		"START_STATION": startStation, 
-       "END_STATION": endStation, 
-	   "TIME_OF_TRAVEL": time, 
-	   "DATE": date, 
-	   "DATE_AFTER": dateAfter, 
-	   "DAY": day, 
-	   "DAY_AFTER": dayAfter}
+	""", {"START_STATION": startStation, "END_STATION": endStation, "TIME_OF_TRAVEL": time, "DATE": date, "DATE_AFTER": dateAfter, "DAY": day, "DAY_AFTER": dayAfter}
 	)
 	allTrips = cursor.fetchall()
 	connection.commit()
@@ -159,7 +150,7 @@ def printAllTripsFor(allTrips: list):
 
 
 if __name__ == "__main__":
-    # print(getTrainSetup(1))
+    print(getTrainSetup(1))
     # print(getStationsForTripBetweenStations(1, "Steinkjer", "Bodoe"))
     # print(getAllTripsFor("Steinkjer", "Bodoe", "2020-11-23", "12:00"))
     # print(getAllTripsFor("Trondheim", "Bodoe", "03.04.2023", "12:00"))'

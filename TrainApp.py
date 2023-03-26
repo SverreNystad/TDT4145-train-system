@@ -1,5 +1,5 @@
 from Station import printStations
-from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay, printAllTrainRoutesForTrip
+from TrainRoutes import getAllTrainRoutesOnDay
 from TrainTrips import getAllTripsFor, printAllTripsFor
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
