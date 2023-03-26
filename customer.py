@@ -91,7 +91,7 @@ def printFutureOrdersAndTickets(CustomerID) -> None:
         for ticket in tickets:
             if (getDateOfTicket(ticket[ORDER_DATE_INDEX]) > datetime.now()): #I do not know if it is possible to compare a datetime object with a string
                 futureTickets.append(ticket)
-        print("Ordernummer: " + str(order[ORDERID_INDEX]) + " Order date: " + str(order[ORDER_DATE_INDEX]))
+        print("Ordernumber: " + str(order[ORDERID_INDEX]) + ", Order date: " + str(order[ORDER_DATE_INDEX]))
 
         for futureTicket in futureTickets:
             printTicket(futureTicket)

@@ -42,7 +42,8 @@ def previewWithSpecialCharacters(userInput: str) -> str:
 
 def convertStationName(stationName: str) -> str:
     # Convert the station name to a format that can be used in SQL
-    convertedStationName: str = convertSpecialCharacters(stationName[0].upper() + stationName[1:].lower())
+    stations: list = stationName.split(" ")
+    convertedStationName: str = ' '.join([convertSpecialCharacters(station[0].upper() + station[1:].lower()) for station in stations])
     return convertedStationName
 
 def isEnglishWeekDay(weekday: str) -> bool:
@@ -130,4 +131,4 @@ if __name__ == "__main__":
     print("Testing convertStationName")
     print(convertStationName("Østfoldbanen"))
     print(convertStationName("Bodø"))
-
+    print(convertStationName("Mo i rana"))

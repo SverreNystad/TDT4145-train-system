@@ -171,6 +171,7 @@ def buyTickets(tripID: int, startStation: str, endStation: str, places: list, cu
 
     # get all stations for tickets
     stations = getStationsForTrip(tripID, startStation, endStation)
+    stations.append((endStation,))
     # create and format all rows to insert into ticket stops
     ticketStops = []
     for i in range(len(tickets)):

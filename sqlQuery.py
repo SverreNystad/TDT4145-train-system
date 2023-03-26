@@ -45,11 +45,11 @@ def doQuery(query: str):
 
     cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 2, 'Steinkjer', '1');")
     cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 2, 'Mosjoeen', '2');")
-    cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 2, 'Mo i Rana', '3');")
+    cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 2, 'Mo I Rana', '3');")
     cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 2, 'Fauske', '4');")
 
     cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 3, 'Mosjoeen', '1');")
-    cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 3, 'Mo i Rana', '2');")
+    cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 3, 'Mo I Rana', '2');")
     cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 3, 'Fauske', '3');")
     cursor.execute("INSERT INTO BillettStopperVed VALUES (1, 3, 'Bodoe', '4');")
     """
@@ -61,7 +61,7 @@ def doQuery(query: str):
     # cursor.execute("""SELECT PlassNummer, VognNummer FROM Billett AS B
     # WHERE EXISTS (SELECT * FROM BillettStopperVed AS BSV WHERE B.BillettID = BSV.BillettID
     #     );""",
-    #         {"stations": getStationsForTrip(1, 'Mo i Rana', 'Bodoe')})
+    #         {"stations": getStationsForTrip(1, 'Mo I Rana', 'Bodoe')})
 
 
 
