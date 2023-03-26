@@ -119,6 +119,14 @@ def getOccupiedBeds(tripID: int, wagonNumber: int, bedsPerGroup: int) -> list:
 	return set(allOccupiedBeds)
 
 def buyTickets(tripID: int, startStation: str, endStation: str, places: list, customerID: int) -> None:
+	# connect to database
+	connection = sqlite3.connect(DATABASE)
+	cursor = connection.cursor()
+	
+	# check for each requested ticket if it is the same ticket
+	if len(places) != len(set(places)):
+		print("Could not buy tickets. Remove duplicate seats/beds, you cannot buy the same seat/bed twice.")
+		return
 	# check for each requested ticket if it is possible to buy it, and add row to list
 	tickets = []
 	for place in places:
@@ -129,10 +137,6 @@ def buyTickets(tripID: int, startStation: str, endStation: str, places: list, cu
 			return
 		else:
 			tickets.append([tripID, 0, 0, placeNumber, wagonNumber])
-
-	# connect to database
-	connection = sqlite3.connect(DATABASE)
-	cursor = connection.cursor()
 
 	# get datetime now
 	cursor.execute(f"""SELECT datetime('now')""")
@@ -146,14 +150,21 @@ def buyTickets(tripID: int, startStation: str, endStation: str, places: list, cu
 	# get next ticket ID for this trip
 	cursor.execute(f"""SELECT MAX(BillettID) FROM Billett
 	WHERE TurID = {tripID}""")
-	ticketID = (cursor.fetchall())[0][0] + 1
+	ticketID = cursor.fetchall()
+	if len(ticketID) == 0 or ticketID[0][0] == None:
+		ticketID = 1
+	else:
+		ticketID = ticketID[0][0] + 1
 	# add order number to all tickets and format rows for insertion
 	ticketsFormatted = []
 	for i in range(len(tickets)):
 		tickets[i][1] = ticketID + i
 		tickets[i][2] = orderNumber
 		ticketsFormatted.append(tuple(tickets[i]))
-	ticketsFormatted = str(tuple(ticketsFormatted))[1:-1]
+	if len(tickets) == 1:
+		ticketsFormatted = str(tuple(ticketsFormatted))[1:-2]
+	else:
+		ticketsFormatted = str(tuple(ticketsFormatted))[1:-1]
 	# add all tickets
 	cursor.execute(f"""INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer)
 	VALUES {ticketsFormatted}""")
@@ -184,4 +195,4 @@ def canBuyTicket(tripID: int, startStation: str, endStation: str, wagonNumber: i
 if __name__ == "__main__":
 	#print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
 	#print(getOccupiedPlacesInWagon(1, "Mosjoeen", "Bodoe", 1))
-	buyTickets(1, "Mosjoeen", "Bodoe", [(1,6), (2,4)], 1)
+	buyTickets(1, "Mosjoeen", "Bodoe", [(1,6), (1,7)], 1)
