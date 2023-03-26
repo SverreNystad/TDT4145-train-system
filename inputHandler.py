@@ -24,19 +24,25 @@ def inputSQLData(message: str) -> str:
 
 def convertSpecialCharacters(userInput: str) -> str:
 	userInput = userInput.replace("ø", "oe")
+	userInput = userInput.replace("Ø", "OE")
 	userInput = userInput.replace("æ", "ae")
+	userInput = userInput.replace("Æ", "AE")
 	userInput = userInput.replace("å", "aa")
+	userInput = userInput.replace("Å", "AA")
 	return userInput
 
 def previewWithSpecialCharacters(userInput: str) -> str:
 	userInput = userInput.replace("oe", "ø")
+	userInput = userInput.replace("OE", "Ø")
 	userInput = userInput.replace("ae", "æ")
+	userInput = userInput.replace("AE", "Æ")
 	userInput = userInput.replace("aa", "å")
+	userInput = userInput.replace("AA", "Å")
 	return userInput
 
 def convertStationName(stationName: str) -> str:
 	# Convert the station name to a format that can be used in SQL
-	convertedStationName: str = stationName[0].upper() + stationName[1:].lower()
+	convertedStationName: str = convertSpecialCharacters(stationName[0].upper() + stationName[1:].lower())
 	return convertedStationName
 
 def isEnglishWeekDay(weekday: str) -> bool:
@@ -121,3 +127,7 @@ if __name__ == "__main__":
 	print("This is a module, not a program")
 	print(previewDate("2020-12-31"))
 	print(previewDate("2020-12-31 00:00:00"))
+	print("Testing convertStationName")
+	print(convertStationName("Østfoldbanen"))
+	print(convertStationName("Bodø"))
+
