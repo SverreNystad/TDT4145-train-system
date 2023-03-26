@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS Rutetider (
     RuteID INTEGER NOT NULL, 
     Stasjonsnavn VARCHAR(255) NOT NULL, 
     Ukedag VARCHAR(255) NOT NULL CHECK (Ukedag = 'Mandag' OR Ukedag = 'Tirsdag' OR Ukedag = 'Onsdag' OR Ukedag = 'Torsdag' OR Ukedag = 'Fredag' OR Ukedag = 'Loerdag' OR Ukedag = 'Soendag'),
-    Ankomst TIME, -- Must be able to be null
-    Avgang TIME, -- Must be able to be null
+    Ankomst TIME,
+    Avgang TIME,
     PRIMARY KEY(RuteID, Stasjonsnavn, Ukedag),
     FOREIGN KEY(RuteID) REFERENCES Togrute(RuteID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY(Stasjonsnavn) REFERENCES Stasjon(Stasjonsnavn) ON DELETE CASCADE ON UPDATE CASCADE
