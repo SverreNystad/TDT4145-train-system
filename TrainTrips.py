@@ -6,7 +6,7 @@ from inputHandler import convertSpecialCharacters, dayAfterTomorrow, previewWith
 
 DATABASE: str = DATABASE_NAME
 
-def getStationsForTrip(tripId: int, startStation: str, endStation: str) -> list:
+def getStationsForTrip(tripID: int, startStation: str, endStation: str) -> list:
     """
     Tar med startstasjon
     """
@@ -16,28 +16,28 @@ def getStationsForTrip(tripId: int, startStation: str, endStation: str) -> list:
     WHERE StoppNr BETWEEN
     	(SELECT StoppNr AS startStopp FROM Rutestopp
     		WHERE Stasjonsnavn = :startStation AND RuteID =
-    			(SELECT RuteID FROM Togtur WHERE TurID = :tripId)) AND
+    			(SELECT RuteID FROM Togtur WHERE TurID = :tripID)) AND
     	(SELECT StoppNr AS endeStopp FROM Rutestopp
     		WHERE Stasjonsnavn = :endStation AND RuteID =
-    			(SELECT RuteID FROM Togtur WHERE TurID = :tripId)) - 1
+    			(SELECT RuteID FROM Togtur WHERE TurID = :tripID)) - 1
     	AND RuteID =
-    		(SELECT RuteID FROM Togtur WHERE TurID = :tripId);""",
-            {"tripId": tripId, "startStation": startStation, "endStation": endStation})
+    		(SELECT RuteID FROM Togtur WHERE TurID = :tripID);""",
+            {"tripID": tripID, "startStation": startStation, "endStation": endStation})
     stations = cursor.fetchall()
     connection.close()
     return stations
 
-def getTrainSetup(tripId: int) -> list:
+def getTrainSetup(tripID: int) -> list:
 	"""
 	Will give a 2d list with each element filled with these values: 
 	[VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering]
 	"""
 
-	# Find VognOppsettID for tripId
+	# Find VognOppsettID for tripID
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
-	cursor.execute("SELECT VognForekomst.VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering FROM VognOppsett, Togrute, Togtur NATURAL JOIN VognForekomst NATURAL JOIN Vogn WHERE VognOppsett.VognOppsettID = Togrute.VognOppsettID  AND Togrute.RuteID = Togtur.RuteID AND Togtur.TurID =:tripId", {
-	               "tripId": tripId})
+	cursor.execute("SELECT VognForekomst.VognNummer, VognNavn, VognType, AntallGrupperinger, PlasserPerGruppering FROM VognOppsett, Togrute, Togtur NATURAL JOIN VognForekomst NATURAL JOIN Vogn WHERE VognOppsett.VognOppsettID = Togrute.VognOppsettID  AND Togrute.RuteID = Togtur.RuteID AND Togtur.TurID =:tripID", {
+	               "tripID": tripID})
 	vognOppsettData = cursor.fetchall()
 	connection.commit()
 	connection.close()

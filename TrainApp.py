@@ -3,6 +3,7 @@ from TrainRoutes import getAllTrainRoutesForTrip, getAllTrainRoutesOnDay, printA
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
 from inputHandler import convertStationName, inputSQLData, isEnglishWeekDay, translateWeekDayToNorwegian
+from TicketHandler import buyTickets
 
 trainLogo = '''
   _______     _______     _______     _______     ___       
@@ -39,11 +40,11 @@ def main():
 			print("             for example, to see all trips on 01.01.2023 and 02.01.2023 after 00:00 on 01.01.2023 from station A to B, write 'train trips, 01.01.2023, 00:00, A, B'.")
 			print("register - registers as a Customer")
 			print("login - logs in as a Customer")
-			print("tickets, <start station>, <end station>, <trip ID> - lists all available tickets between a start station and an end station for a given route")
+			print("tickets, <trip ID>, <start< station>, <end station> - lists all available tickets between a start station and an end station for a given route")
 			print("         for example, to see all available tickets from station A to B on trip 1, write 'tickets, A, B, 1'")
 			if isLoggedIn:
-				print("buy ticket, <start station>, <end station>, <trip ID>, [<wagon number>, <seat/bed number>] - reserve a seat/bed in a specific wagon between a start station and an end station for a given route")
-				print("            for example, to buy a two tickets from A to B on trip 1, write 'buy ticket, A, B, 1, [1, 1], [2, 1]' for seats 1 in wagons 1 and 2")
+				print("buy tickets, <trip ID>, <start station>, <end station>, [(<wagon number> <seat/bed number>)] - reserve a seat/bed in a specific wagon between a start station and an end station for a given route")
+				print("            for example, to buy a tickets for seat 1 wagon 1, seat 2 wagon 1, and seat 1 wagon 2 from A to B on trip 1, write 'buy ticket, 1, A, B, [(1,1),(1,2),(2,1)]'")
 				print("my tickets - lists all future tickets for the logged in Customer")
 				print("=========================================")
 			else:
@@ -53,16 +54,16 @@ def main():
 			break
 
 		elif userInput == "register":
-			customerId = registerCustomerInfo()
-			if (customerId):
-				userID = customerId[0]
+			customerID = registerCustomerInfo()
+			if (customerID):
+				userID = customerID[0]
 				isLoggedIn = True
 				print("Logged in as Customer with ID: " + str(userID))
 
 		elif userInput == "login":
-			customerId = login()
-			if (customerId):
-				userID = customerId[0]
+			customerID = login()
+			if (customerID):
+				userID = customerID[0]
 				isLoggedIn = True
 				print("Logged in as Customer with ID: " + str(userID))
 			else:
@@ -119,22 +120,25 @@ def main():
 		elif userInput.startswith("tickets, "):
 			temp = userInput.split(", ")
 			if (len(temp) == 5):
-				startStation = convertStationName(temp[1])
-				endStation = convertStationName(temp[2])
-				routeID = temp[3]
+				tripID = temp[1]
+				startStation = convertStationName(temp[2])
+				endStation = convertStationName(temp[3])
 				print("All available tickets from " + startStation + " to " + endStation + " on route " + routeID + ": ")
-				
-		elif userInput.startswith("buy ticket, "):
+		
+		# TODO: support for more tickets
+		elif userInput.startswith("buy tickets, "):
 			temp = userInput.split(", ")
-			if (len(temp) == 7):
-				if (isLoggedIn):
-					startStation = convertStationName(temp[1])
-					endStation = convertStationName(temp[2])
-					routeID = temp[3]
-					seatNumber = temp[4]
-					wagonNumber = temp[5]
+			if len(temp) != 5:
+				temp[4] = " ".join(temp[4:]).replace(" ", ",")
+			if (isLoggedIn):
+				tripID = temp[1]
+				startStation = convertStationName(temp[2])
+				endStation = convertStationName(temp[3])
+				tickets = temp[4]
+				
+				#buyTickets(tripID, startStation, endStation, tickets, userID)
 
-					print("Buying ticket from " + startStation + " to " + endStation + " on route " + routeID + " in wagon " + wagonNumber + " seat " + seatNumber + " for Customer with ID: " + str(userID))
+				print("Buying ticket from " + startStation + " to " + endStation + " on trip " + tripID + " in wagon " + wagonNumber + " seat " + seatNumber + " for Customer with ID: " + str(userID))
 		else:
 			print("Command not found. Type 'help' to see all commands")
 if __name__ == "__main__":

@@ -84,7 +84,7 @@ def getAllRoutesDrivingOn(routeID: int, station: str, day: str, time: str) -> li
 
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM Rutetider WHERE RuteID =:routeId AND Stasjonsnavn =:station AND Ukedag =:day ", {"routeId": routeID, "station": station, "day": day})
+	cursor.execute("SELECT * FROM Rutetider WHERE RuteID =:routeID AND Stasjonsnavn =:station AND Ukedag =:day ", {"routeID": routeID, "station": station, "day": day})
 	routeTimes = cursor.fetchall()
 	connection.close()
 	

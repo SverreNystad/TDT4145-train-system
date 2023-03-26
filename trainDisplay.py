@@ -2,11 +2,11 @@ from TrainRoutes import getTrainSetup;
 occupiedSign = "X"
 nonOccupiedSign = "O"
 
-def displayTrain(tripId: int, soldTickets: list):
+def displayTrain(tripID: int, soldTickets: list):
 	# soldTickets = (plass nummer, vognnummer)
-	print("Displaying train for tour with id: " + str(tripId))
-	train = getTrainSetup(tripId)
-	# soldTickets = getSoldTickets(tripId, stoppId) # TODO: Must create method
+	print("Displaying train for tour with id: " + str(tripID))
+	train = getTrainSetup(tripID)
+	# soldTickets = getSoldTickets(tripID, stoppID) # TODO: Must create method
 	for wagon in train:
 		displayWagon(soldTickets, wagon[0], wagon[1], wagon[2], wagon[3], wagon[4])
 

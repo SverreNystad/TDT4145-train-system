@@ -70,7 +70,7 @@ def doQuery(query: str):
 	# WHERE EXISTS (SELECT * FROM BillettStopperVed AS BSV
 	# 	WHERE BSV.TurID = B.TurID AND BSV.BillettID = B.BillettID AND Stasjonsnavn IN :stations
 	# 		AND Stasjonsnavn <> (SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed
-	# 					WHERE TurID = :tripId AND BillettID = :ticketId
+	# 					WHERE TurID = :tripID AND BillettID = :ticketID
 	# 					GROUP BY BillettID));""",
 	# 		{"stations": getStationsForTrip(1, )})
 	# except Exception as e:
@@ -78,8 +78,8 @@ def doQuery(query: str):
 	#cursor.execute("DELETE FROM BillettStopperVed;")
 	# TODO: LEGG TIL AT KOMBO INNAD ER UNIK
 	#cursor.execute("SELECT * FROM BillettStopperVed;")
-	#cursor.execute("SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed WHERE TurID = :tripId AND BillettID = :ticketId GROUP BY BillettID", {"tripId": 1, "ticketId": 1})
-	#cursor.execute("SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed WHERE BillettID = :ticketId GROUP BY BillettID", {"ticketId": 1})
+	#cursor.execute("SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed WHERE TurID = :tripID AND BillettID = :ticketID GROUP BY BillettID", {"tripID": 1, "ticketID": 1})
+	#cursor.execute("SELECT Stasjonsnavn, MAX(StasjonsNummer) FROM BillettStopperVed WHERE BillettID = :ticketID GROUP BY BillettID", {"ticketID": 1})
 	return results
 
 if __name__ == "__main__":

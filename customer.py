@@ -110,23 +110,23 @@ def getCustomerHistory(CustomerID: str) -> list:
 	connection.close()
 	return result
 
-def getCustomerTicketBy(CusomerOrderId: str) -> list:
+def getCustomerTicketBy(CustomerOrderID: str) -> list:
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT * FROM Billett WHERE OrdreNummer =:CustomerOrderID", {"CustomerOrderID": CusomerOrderId})
+	cursor.execute("SELECT * FROM Billett WHERE OrdreNummer =:CustomerOrderID", {"CustomerOrderID": CustomerOrderID})
 	result = cursor.fetchall()
 	connection.commit()
 	connection.close()
 	return result
 
-def getDateOfTicket(tripId: str) -> datetime:
+def getDateOfTicket(tripID: str) -> datetime:
 	# Create a connection to the database
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("SELECT TurDato FROM Togtur WHERE TurID =:tripId", {"tripId": tripId})
+	cursor.execute("SELECT TurDato FROM Togtur WHERE TurID =:tripID", {"tripID": tripID})
 	result = cursor.fetchone()
 	connection.commit()
 	connection.close()
