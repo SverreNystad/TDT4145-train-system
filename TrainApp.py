@@ -4,7 +4,8 @@ from TrainTrips import getAllTripsFor, printAllTripsFor
 from customer import login, printFutureOrdersAndTickets, registerCustomerInfo
 from database_config import setup
 from inputHandler import convertStationName, inputSQLData, isEnglishWeekDay, translateWeekDayToNorwegian
-from TicketHandler import buyTickets
+from TicketHandler import buyTickets, getOccupiedPlaces
+from trainDisplay import displayTrain
 
 trainLogo = '''
   _______     _______     _______     _______     ___       
@@ -125,7 +126,8 @@ def main():
 				startStation = convertStationName(temp[2])
 				endStation = convertStationName(temp[3])
 				print("All available tickets from " + startStation + " to " + endStation + " on route " + routeID + ": ")
-		
+				displayTrain(tripID, getOccupiedPlaces(tripID, startStation, endStation))
+				
 		elif userInput.startswith("buy tickets, "):
 			temp = userInput.split(", ")
 			if len(temp) != 5:
