@@ -33,7 +33,6 @@ def getOccupiedPlaces(tripID: int, startStation: str, endStation: str) -> list:
 			occupiedPlaces += occupiedBeds
 	return occupiedPlaces
 
-# donedone!
 def getOccupiedPlacesInWagon(tripID: int, startStation: str, endStation: str, wagonNumber: int) -> list:
 	"""
 	Using a trip, start station, end station, and wagonNumber, get all places (seats/beds)
@@ -62,7 +61,6 @@ def getOccupiedPlacesInWagon(tripID: int, startStation: str, endStation: str, wa
 		occupiedPlaces += occupiedBeds
 	return occupiedPlaces
 
-#donezo
 def getOccupiedSeats(tripID: int, stations: list, wagonNumber: int) -> list:
 	"""
 	Get all seats that are not available for a given trip and wagon number over certain stations.
@@ -96,7 +94,6 @@ def getOccupiedSeats(tripID: int, stations: list, wagonNumber: int) -> list:
 	connection.close()
 	return occupiedSeats
 
-#donedone!
 def getOccupiedBeds(tripID: int, wagonNumber: int, bedsPerGroup: int) -> list:
 	"""
 	Get all beds that are not available for a given trip and wagon number.
@@ -121,20 +118,8 @@ def getOccupiedBeds(tripID: int, wagonNumber: int, bedsPerGroup: int) -> list:
 			allOccupiedBeds.append((wagonNumber, bed))
 	return set(allOccupiedBeds)
 
-#done:) might not be needed though...
-def getTicketEndStation(tripID: int, ticketID: int) -> str:
-	connection = sqlite3.connect(DATABASE)
-	cursor = connection.cursor()
-	cursor.execute("""SELECT Stasjonsnavn FROM BillettStopperVed
-						WHERE TurID = :tripID AND BillettID = :ticketID
-						GROUP BY BillettID HAVING MAX(StasjonsNummer)""",
-	{"tripID": tripID, "ticketID": ticketID})
-	endStation = cursor.fetchall()
-	connection.close()
-	return endStation
-
 def buyTickets(tripID: int, startStation: str, endStation: str, places: list, customerID: int) -> None:
-	# check for each requested ticket if it is possible to buy it, and add formatted row to list
+	# check for each requested ticket if it is possible to buy it, and add row to list
 	tickets = []
 	for place in places:
 		wagonNumber = place[0]
@@ -143,39 +128,54 @@ def buyTickets(tripID: int, startStation: str, endStation: str, places: list, cu
 			print(f"Could not buy tickets. Ticket for wagon {wagonNumber} and seat/bed {placeNumber} is not available.")
 			return
 		else:
-			tickets.append((tripID))
+			tickets.append([tripID, 0, 0, placeNumber, wagonNumber])
 
 	# connect to database
 	connection = sqlite3.connect(DATABASE)
 	cursor = connection.cursor()
 
-	# add customer order
+	# get datetime now
 	cursor.execute(f"""SELECT datetime('now')""")
 	purchaseTime = cursor.fetchall()[0][0]
-	print(purchaseTime)
-	print(customerID)
+	# insert new order for now
 	cursor.execute(f"""INSERT INTO KundeOrdre (KjoepsTidspunkt, Kundenummer)
 	VALUES ('{purchaseTime}', '{customerID}')""")
-	# get order number
+	# get newly created order number
 	orderNumber = cursor.execute(f"""SELECT OrdreNummer FROM KundeOrdre
-	WHERE KjøpsTidspunkt = {purchaseTime} AND KundeNummer = {customerID}""")
-	print(orderNumber)
+	WHERE KjoepsTidspunkt = '{purchaseTime}' AND KundeNummer = '{customerID}'""")
+	orderNumber = cursor.fetchall()[0][0]
 
+	# get next ticket ID for this trip
+	cursor.execute(f"""SELECT MAX(BillettID) FROM Billett
+	WHERE TurID = {tripID}""")
+	ticketID = (cursor.fetchall())[0][0] + 1
+	# add order number to all tickets and format rows for insertion
+	ticketsFormatted = []
+	for i in range(len(tickets)):
+		tickets[i][1] = ticketID + i
+		tickets[i][2] = orderNumber
+		ticketsFormatted.append(tuple(tickets[i]))
+	ticketsFormatted = str(tuple(ticketsFormatted))[1:-1]
 	# add all tickets
-	cursor.execute("""INSERT INTO Billett (TurID, Stasjonsnavn, StasjonsNummer)
-	VALUES """)
+	cursor.execute(f"""INSERT INTO Billett (TurID, BillettID, OrdreNummer, PlassNummer, VognNummer)
+	VALUES {ticketsFormatted}""")
 
 	# get all stations for tickets
 	stations = getStationsForTrip(tripID, startStation, endStation)
+	# create and format all rows to insert into ticket stops
+	ticketStops = []
+	for i in range(len(tickets)):
+		for j in range(len(stations)):
+			ticketStops.append((tickets[i][0], tickets[i][1], stations[j][0], j+1))
+	ticketStopsFormatted = str(tuple(ticketStops))[1:-1]
+		
 	# add all stations for tickets
+	cursor.execute(f"""INSERT INTO BillettStopperVed (TurID, BillettID, Stasjonsnavn, StasjonsNummer)
+	VALUES {ticketStopsFormatted}""")
 
-	# <start station>, <end station>, <trip ID>, [<wagon number>, <seat/bed number>]
-
-	#connection.commit()		
-	return
+	connection.commit()
 
 def canBuyTicket(tripID: int, startStation: str, endStation: str, wagonNumber: int, placeNumber: int) -> bool:
-	print(tripID, startStation, endStation, wagonNumber)
 	occupiedPlaces = getOccupiedPlacesInWagon(tripID, startStation, endStation, wagonNumber)
 	if (wagonNumber, placeNumber) in occupiedPlaces:
 		return False
@@ -184,4 +184,4 @@ def canBuyTicket(tripID: int, startStation: str, endStation: str, wagonNumber: i
 if __name__ == "__main__":
 	#print(getOccupiedPlaces(1, "Mosjoeen", "Bodoe"))
 	#print(getOccupiedPlacesInWagon(1, "Mosjoeen", "Bodoe", 1))
-	print(buyTickets(1, "Mosjoeen", "Bodoe", [(1,1), (2,2)], 1))
+	buyTickets(1, "Mosjoeen", "Bodoe", [(1,1), (2,2)], 1)

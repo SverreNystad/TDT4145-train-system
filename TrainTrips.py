@@ -22,7 +22,8 @@ def getStationsForTrip(tripID: int, startStation: str, endStation: str) -> list:
     		WHERE Stasjonsnavn = :endStation AND RuteID =
     			(SELECT RuteID FROM Togtur WHERE TurID = :tripID)) - 1
     	AND RuteID =
-    		(SELECT RuteID FROM Togtur WHERE TurID = :tripID);""",
+    		(SELECT RuteID FROM Togtur WHERE TurID = :tripID)
+		ORDER BY StoppNr""",
             {"tripID": tripID, "startStation": startStation, "endStation": endStation})
     stations = cursor.fetchall()
     connection.close()
