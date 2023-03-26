@@ -44,7 +44,7 @@ def postCustomer(customerName: str, customerEmail: str, customerPhone: str) -> i
 	connection = sqlite3.connect(DATABASE)
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
-	cursor.execute("INSERT INTO Kunde (Navn, Email, TlfNr) VALUES (?,?,?)", (customerName, customerEmail, customerPhone))
+	cursor.execute("INSERT INTO Kunde (Navn, Epost, TlfNr) VALUES (?,?,?)", (customerName, customerEmail, customerPhone))
 	connection.commit()
 	connection.close()
 	print("Registration successful!")
@@ -155,7 +155,7 @@ def getCustomerNrByMailOrPhone(identificator: str) -> int:
 	# Create a cursor to execute SQL commands
 	cursor = connection.cursor()
 	#Har vi check slik at email må ha @ og tlf nr ikke kan ha @? Er bra å ha for denne spørringen
-	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Kunde.Email=:id OR Kunde.TlfNr=:id", {"id": identificator})
+	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Kunde.Epost=:id OR Kunde.TlfNr=:id", {"id": identificator})
 	a=cursor.fetchone()
 	if a==None:
 		return -1
