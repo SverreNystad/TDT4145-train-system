@@ -74,11 +74,8 @@ def getCustomer(customerEmail: str) -> int:
 	return result
 
 
-def printFutureOrdersAndTickets(identificator) -> None:
+def printFutureOrdersAndTickets(CustomerID) -> None:
 	# Get all orders
-	CustomerID = getCustomerNrByMailOrPhone(identificator)
-	if CustomerID == -1:
-		print("We couldn't find a user with this mail or phone number")
 	history: list = getCustomerHistory(CustomerID)
 	orderToTicket: dict = {}
 
@@ -151,18 +148,6 @@ def insertOrder():
 	connection.commit()
 	connection.close()
 #insertOrder()
-
-def getCustomerNrByMailOrPhone(identificator: str) -> int:
-	# Create a connection to the database
-	connection = sqlite3.connect(DATABASE)
-	# Create a cursor to execute SQL commands
-	cursor = connection.cursor()
-	#Har vi check slik at email må ha @ og tlf nr ikke kan ha @? Er bra å ha for denne spørringen
-	cursor.execute("SELECT Kundenummer FROM Kunde WHERE Kunde.Epost=:id OR Kunde.TlfNr=:id", {"id": identificator})
-	a=cursor.fetchone()
-	if a==None:
-		return -1
-	return a[0]
 
 def getStartAndStopStation(tripID, ticketID):
 	results=["",""]
