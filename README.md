@@ -41,6 +41,7 @@ Run the `train_app.py` Python file to start the application. Upon starting, you 
 * `my tickets` - lists all future tickets for the logged in Customer
 
 ### ER diagram
+![ER diagram of train app](https://user-images.githubusercontent.com/89105607/236075048-20557b51-a4c3-4096-b4e3-fc0b424e2f12.PNG)
 
 
 ### Dependencies
